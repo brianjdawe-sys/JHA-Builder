@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>JHA Builder v7 — HSE-F0016 | Stream Flo Industries</title>
+<title>JHA Builder — HSE-F0016 | Stream Flo Industries</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#0a0a0a;font-family:'Segoe UI',system-ui,sans-serif;color:#e0e0e0;font-size:14px;min-height:100vh}
@@ -335,17 +335,25 @@ function buildHazBlock(haz, step) {
   r2.style.cssText="display:flex;align-items:center;gap:16px;margin-bottom:8px";
 
   function makeTraGroup(label, val, onchange) {
+    var TRA_VALS=[1,2,3,4,5,6,8,9,10,12,15,16,20,25];
     var g=document.createElement("div"); g.style.cssText="display:flex;align-items:center;gap:8px";
     var l2=document.createElement("label"); l2.className="lbl"; l2.style.marginBottom="0"; l2.textContent=label; g.appendChild(l2);
-    var inp=document.createElement("input"); inp.type="number"; inp.min="1"; inp.max="25"; inp.value=val;
-    inp.style.cssText="width:62px;font-weight:700;text-align:center";
+    var sel=document.createElement("select");
+    sel.style.cssText="width:72px;font-weight:700;text-align:center;padding:4px 2px";
+    TRA_VALS.forEach(function(v){
+      var opt=document.createElement("option"); opt.value=v; opt.textContent=v;
+      var ts=traStyle(v);
+      opt.style.background=ts.bg; opt.style.color=ts.fg;
+      if(v===val||String(v)===String(val)) opt.selected=true;
+      sel.appendChild(opt);
+    });
     var badge=traBadge(val);
-    inp.oninput=function(){
-      var v=parseInt(inp.value,10)||9; onchange(v);
+    sel.onchange=function(){
+      var v=parseInt(sel.value,10); onchange(v);
       var ts2=traStyle(v); badge.textContent=v;
       badge.style.background=ts2.bg+"22"; badge.style.color=ts2.bg; badge.style.border="1px solid "+ts2.bg+"55";
     };
-    g.appendChild(inp); g.appendChild(badge); return g;
+    g.appendChild(sel); g.appendChild(badge); return g;
   }
   r2.appendChild(makeTraGroup("Pre TRA",haz.preTRA,function(v){haz.preTRA=v;}));
   var arr=document.createElement("span"); arr.style.color="#444"; arr.textContent="→"; r2.appendChild(arr);
@@ -452,13 +460,6 @@ function renderDocsTools() {
 // ══════════════════════════════════════════════════════════════════════════════
 // AI
 // ══════════════════════════════════════════════════════════════════════════════
-function setStatus(type,msg){
-  var sb=ge("status-bar"); sb.textContent=msg; sb.style.display="block";
-  if(type==="loading"){sb.style.cssText="padding:9px 24px;font-size:13px;display:block;background:#1f1800;border-bottom:1px solid #FFB800;color:#FFB800";}
-  if(type==="done")   {sb.style.cssText="padding:9px 24px;font-size:13px;display:block;background:#44bb6622;border-bottom:1px solid #44bb66;color:#81c784";}
-  if(type==="error")  {sb.style.cssText="padding:9px 24px;font-size:13px;display:block;background:#ff444422;border-bottom:1px solid #ff4444;color:#ff4444";}
-  if(type==="idle")   {sb.style.display="none";}
-}
 
 // ══════════════════════════════════════════════════════════════════════════════
 // TEMPLATE ZIP — uses JSZip (loaded from CDN) for reliable ZIP handling
