@@ -76,16 +76,22 @@ button{cursor:pointer;font-family:inherit;border:none}
       </strong>
       <div id="version-note" style="font-size:11px;color:#555;margin-top:4px">Version 5 — loaded from GitHub Pages</div>
     </div>
-    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
       <div style="flex:1;min-width:280px">
         <label class="lbl">Anthropic API Key</label>
         <input type="password" id="api-key" placeholder="sk-ant-api03-…" style="font-family:monospace" oninput="saveKey()"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px">
+        <label class="lbl">Cloudflare Worker Proxy URL <span style="color:#555;font-weight:400">(required for Safari / GitHub Pages)</span></label>
+        <input type="text" id="proxy-url" placeholder="https://jha-proxy.yourname.workers.dev" oninput="saveProxy()"/>
       </div>
       <button class="btn btn-ai" id="btn-test" onclick="testAPI()">Test Connection</button>
       <button class="btn btn-g" onclick="toggleAI()">Close</button>
     </div>
     <div id="api-msg" style="margin-top:7px;font-size:12px;color:#555"></div>
-    <div style="margin-top:6px;font-size:11px;color:#555">Key saved in this browser only. Sent directly to api.anthropic.com.</div>
+    <div style="margin-top:6px;font-size:11px;color:#555">Key and proxy URL saved in this browser only.</div>
   </div>
 </div>
 
@@ -470,12 +476,15 @@ function renderDocsTools() {
 // ══════════════════════════════════════════════════════════════════════════════
 function getKey(){ return gv("api-key").trim(); }
 function saveKey(){ try{localStorage.setItem("sfi_key",gv("api-key"));}catch(e){} }
+function saveProxy(){ try{localStorage.setItem("sfi_proxy",gv("proxy-url"));}catch(e){} }
+function getProxy(){ return gv("proxy-url").trim(); }
 
 function callAI(desc, key) {
   var hazLines=[]; Object.keys(HAZARD_LIB).forEach(function(type){HAZARD_LIB[type].forEach(function(m){hazLines.push("["+type+"] "+m);});});
   var ctlLines=[]; CTRL_LIB.forEach(function(g){g.items.forEach(function(i){ctlLines.push(i);});});
   var prompt="You are an HSE expert completing a JHA for industrial field service.\n\nJob Step: \""+desc+"\"\n\nSelect ALL applicable hazards. For EACH hazard, select specific controls from the controls list.\n\nHAZARDS (use EXACT text after code):\n"+hazLines.join("\n")+"\n\nCONTROLS (use EXACT text):\n"+ctlLines.join("\n")+"\n\nRules: pick every relevant hazard; each hazard gets its own controls; add a brief comment for each; set preTRA/postTRA (1-25); use ONLY items from the lists.\n\nReturn ONLY valid JSON (no markdown):\n{\"hazards\":[{\"type\":\"SH\",\"mechanism\":\"exact text\",\"comment\":\"why\",\"preTRA\":12,\"postTRA\":6,\"controls\":[{\"text\":\"exact text\",\"comment\":\"how\"}]}]}";
-  return fetch("https://api.anthropic.com/v1/messages",{
+  var endpoint=getProxy()||"https://api.anthropic.com/v1/messages";
+  return fetch(endpoint,{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -484,7 +493,7 @@ function callAI(desc, key) {
       "anthropic-dangerous-client-side-api-key-access":"true"
     },
     body:JSON.stringify({
-      model:"claude-sonnet-4-5",
+      model:"claude-3-5-haiku-20241022",
       max_tokens:3000,
       messages:[{role:"user",content:prompt}]
     })
@@ -538,7 +547,8 @@ function testAPI() {
   setApiMsg("info","Testing connection to api.anthropic.com…");
 
   // Raw fetch so we can see exactly what fails
-  fetch("https://api.anthropic.com/v1/messages",{
+  var endpoint=getProxy()||"https://api.anthropic.com/v1/messages";
+  fetch(endpoint,{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -547,7 +557,7 @@ function testAPI() {
       "anthropic-dangerous-client-side-api-key-access":"true"
     },
     body:JSON.stringify({
-      model:"claude-sonnet-4-5",
+      model:"claude-3-5-haiku-20241022",
       max_tokens:10,
       messages:[{role:"user",content:"hi"}]
     })
@@ -571,7 +581,7 @@ function testAPI() {
 }
 function setApiMsg(type,msg){
   var el=ge("api-msg"); if(!el)return;
-  el.textContent=msg;
+  el.innerHTML=msg;
   el.style.color=type==="ok"?"#44bb66":type==="fail"?"#ff4444":"#FFB800";
 }
 
@@ -932,6 +942,7 @@ function generate() {
 (function init(){
   if(window.location.protocol==="file:") ge("cors-note").style.display="block";
   try{var k=localStorage.getItem("sfi_key");if(k) ge("api-key").value=k;}catch(e){}
+  try{var p=localStorage.getItem("sfi_proxy");if(p) ge("proxy-url").value=p;}catch(e){}
   var today=new Date().toISOString().split("T")[0];
   ge("h-cdt").value=today;
   renderDocsTools();
