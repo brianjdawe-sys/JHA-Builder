@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>JHA Builder v5 — HSE-F0016 | Stream Flo Industries</title>
+<title>JHA Builder v6 — HSE-F0016 | Stream Flo Industries</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#0a0a0a;font-family:'Segoe UI',system-ui,sans-serif;color:#e0e0e0;font-size:14px;min-height:100vh}
@@ -69,12 +69,7 @@ button{cursor:pointer;font-family:inherit;border:none}
     <div style="background:#1a1400;border:1px solid #FFB80044;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.7">
       AI reads your task description and selects hazards with matched controls from the development tool library.
       Each hazard gets its own controls — matching the HSE-JHA-FS-005 completed example format.<br>
-      <strong id="cors-note" style="color:#FFB800;display:none">
-        ⚠ Running from file:// — AI is blocked by Safari on local files.<br>
-        Open Terminal: <code style="background:#0a0a0a;color:#a8ff78;padding:2px 7px;border-radius:3px">cd ~/Downloads &amp;&amp; python3 -m http.server 8080</code>
-        then open <code style="background:#0a0a0a;color:#FFB800;padding:2px 7px;border-radius:3px">http://localhost:8080/jha-builder.html</code>
-      </strong>
-      <div id="version-note" style="font-size:11px;color:#555;margin-top:4px">Version 5 — loaded from GitHub Pages</div>
+      <div id="version-note" style="font-size:11px;color:#555;margin-top:6px">Version 6</div>
     </div>
     <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
       <div style="flex:1;min-width:280px">
@@ -83,13 +78,10 @@ button{cursor:pointer;font-family:inherit;border:none}
       </div>
     </div>
     <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
-      <div style="flex:1;min-width:280px">
-        <label class="lbl">Cloudflare Worker Proxy URL <span style="color:#555;font-weight:400">(required for Safari / GitHub Pages)</span></label>
-        <input type="text" id="proxy-url" placeholder="https://jha-proxy.yourname.workers.dev" oninput="saveProxy()"/>
-      </div>
       <button class="btn btn-ai" id="btn-test" onclick="testAPI()">Test Connection</button>
       <button class="btn btn-g" onclick="toggleAI()">Close</button>
     </div>
+    <input type="hidden" id="proxy-url" value=""/>
     <div id="api-msg" style="margin-top:7px;font-size:12px;color:#555"></div>
     <div style="margin-top:6px;font-size:11px;color:#555">Key and proxy URL saved in this browser only.</div>
   </div>
@@ -477,7 +469,14 @@ function renderDocsTools() {
 function getKey(){ return gv("api-key").trim(); }
 function saveKey(){ try{localStorage.setItem("sfi_key",gv("api-key"));}catch(e){} }
 function saveProxy(){ try{localStorage.setItem("sfi_proxy",gv("proxy-url"));}catch(e){} }
-function getProxy(){ return gv("proxy-url").trim(); }
+function getProxy(){
+  var manual=gv("proxy-url").trim();
+  if(manual) return manual;
+  if(window.location.hostname.indexOf("vercel.app")>-1){
+    return window.location.origin+"/api/proxy";
+  }
+  return "http://localhost:7823";
+}
 
 function callAI(desc, key) {
   var hazLines=[]; Object.keys(HAZARD_LIB).forEach(function(type){HAZARD_LIB[type].forEach(function(m){hazLines.push("["+type+"] "+m);});});
