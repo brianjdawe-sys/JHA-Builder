@@ -765,7 +765,6 @@ function generate() {
 // INITIALISE
 // ══════════════════════════════════════════════════════════════════════════════
 (function init(){
-  if(window.location.protocol==="file:") ge("cors-note").style.display="block";
   var today=new Date().toISOString().split("T")[0];
   ge("h-cdt").value=today;
   renderDocsTools();
