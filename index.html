@@ -474,9 +474,38 @@ function callAI(desc, key) {
   var hazLines=[]; Object.keys(HAZARD_LIB).forEach(function(type){HAZARD_LIB[type].forEach(function(m){hazLines.push("["+type+"] "+m);});});
   var ctlLines=[]; CTRL_LIB.forEach(function(g){g.items.forEach(function(i){ctlLines.push(i);});});
   var prompt="You are an HSE expert completing a JHA for industrial field service.\n\nJob Step: \""+desc+"\"\n\nSelect ALL applicable hazards. For EACH hazard, select specific controls from the controls list.\n\nHAZARDS (use EXACT text after code):\n"+hazLines.join("\n")+"\n\nCONTROLS (use EXACT text):\n"+ctlLines.join("\n")+"\n\nRules: pick every relevant hazard; each hazard gets its own controls; add a brief comment for each; set preTRA/postTRA (1-25); use ONLY items from the lists.\n\nReturn ONLY valid JSON (no markdown):\n{\"hazards\":[{\"type\":\"SH\",\"mechanism\":\"exact text\",\"comment\":\"why\",\"preTRA\":12,\"postTRA\":6,\"controls\":[{\"text\":\"exact text\",\"comment\":\"how\"}]}]}";
-  return fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-client-side-api-key-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,messages:[{role:"user",content:prompt}]})})
-  .then(function(r){if(!r.ok)return r.json().catch(function(){return{};}).then(function(e){throw new Error((e.error&&e.error.message)||"HTTP "+r.status);});return r.json();})
-  .then(function(d){var txt=(d.content&&d.content[0]&&d.content[0].text)||"{}";var c=txt.replace(/```json|```/g,"").trim();var i=c.indexOf("{");if(i>0)c=c.slice(i);return JSON.parse(c);});
+  return fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key":key,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-client-side-api-key-access":"true"
+    },
+    body:JSON.stringify({
+      model:"claude-sonnet-4-5",
+      max_tokens:3000,
+      messages:[{role:"user",content:prompt}]
+    })
+  })
+  .then(function(r){
+    if(!r.ok) return r.json().catch(function(){return{};}).then(function(body){
+      throw new Error((body.error&&body.error.message)||"HTTP "+r.status);
+    });
+    return r.json();
+  })
+  .then(function(d){
+    var txt=(d.content&&d.content[0]&&d.content[0].text)||"{}";
+    var c=txt.replace(/```json|```/g,"").trim();
+    var i=c.indexOf("{"); if(i>0) c=c.slice(i);
+    return JSON.parse(c);
+  });
+}
+
+function isNetworkError(msg) {
+  return msg.indexOf("fetch")>-1||msg.indexOf("Load failed")>-1||
+         msg.indexOf("NetworkError")>-1||msg.indexOf("Failed to fetch")>-1||
+         msg.indexOf("Network request failed")>-1;
 }
 
 function runAI(step) {
@@ -485,16 +514,19 @@ function runAI(step) {
   if(!step.desc.trim()){alert("Enter a task description first.");return;}
   step.aiState="loading"; renderAll();
   callAI(step.desc,key).then(function(result){
-    step.hazards=(result.hazards||[]).map(function(h){return mkHazard({type:h.type||"SH",mechanism:h.mechanism||"",comment:h.comment||"",preTRA:h.preTRA||9,postTRA:h.postTRA||4,controls:h.controls||[]});});
+    step.hazards=(result.hazards||[]).map(function(h){
+      return mkHazard({type:h.type||"SH",mechanism:h.mechanism||"",comment:h.comment||"",
+                       preTRA:h.preTRA||9,postTRA:h.postTRA||4,controls:h.controls||[]});
+    });
     if(!step.hazards.length) step.hazards=[mkHazard()];
     step.aiState="done"; renderAll();
   }).catch(function(e){
     step.aiState="idle"; renderAll();
-    if(e.message==="NO_KEY"){alert("Enter your API key.");return;}
-    if(e.message.indexOf("fetch")>-1||e.message.indexOf("Load failed")>-1||e.message.indexOf("NetworkError")>-1){
-      alert("Network blocked.\n\nOpen Terminal:\ncd ~/Downloads && python3 -m http.server 8080\n\nThen open:\nhttp://localhost:8080/jha-builder.html");return;
+    if(isNetworkError(e.message)){
+      alert("Network error calling Anthropic API.\n\nError: "+e.message+"\n\nCheck:\n• Your API key is correct\n• You have credits at console.anthropic.com\n• You are not behind a firewall blocking api.anthropic.com");
+    } else {
+      alert("AI error: "+e.message);
     }
-    alert("AI error: "+e.message);
   });
 }
 
@@ -502,13 +534,18 @@ function testAPI() {
   var key=getKey();
   if(!key){setApiMsg("fail","Enter an API key first.");return;}
   ge("btn-test").disabled=true; ge("btn-test").textContent="Testing…";
-  setApiMsg("info","Testing connection…");
+  setApiMsg("info","Testing connection to api.anthropic.com…");
   callAI("Install a pressure gauge on a wellhead",key).then(function(){
     setApiMsg("ok","✓ Connected — use ✦ AI Suggest on any step");
-    ge("btn-ai-open").style.borderColor="#44bb66"; ge("btn-ai-open").style.color="#44bb66"; ge("btn-ai-open").textContent="✦ AI Ready";
+    ge("btn-ai-open").style.borderColor="#44bb66";
+    ge("btn-ai-open").style.color="#44bb66";
+    ge("btn-ai-open").textContent="✦ AI Ready";
   }).catch(function(e){
-    var msg=e.message.indexOf("fetch")>-1||e.message.indexOf("Load failed")>-1?"✗ Network blocked — open via localhost":"✗ Failed: "+e.message;
-    setApiMsg("fail",msg);
+    if(isNetworkError(e.message)){
+      setApiMsg("fail","✗ Network error: "+e.message+". Check your API key has credits and api.anthropic.com is reachable.");
+    } else {
+      setApiMsg("fail","✗ "+e.message);
+    }
   }).then(function(){ ge("btn-test").disabled=false; ge("btn-test").textContent="Test Connection"; });
 }
 function setApiMsg(type,msg){
