@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>JHA Builder — HSE-F0016 | Stream Flo Industries</title>
+<title>JHA Builder v5 — HSE-F0016 | Stream Flo Industries</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#0a0a0a;font-family:'Segoe UI',system-ui,sans-serif;color:#e0e0e0;font-size:14px;min-height:100vh}
@@ -74,6 +74,7 @@ button{cursor:pointer;font-family:inherit;border:none}
         Open Terminal: <code style="background:#0a0a0a;color:#a8ff78;padding:2px 7px;border-radius:3px">cd ~/Downloads &amp;&amp; python3 -m http.server 8080</code>
         then open <code style="background:#0a0a0a;color:#FFB800;padding:2px 7px;border-radius:3px">http://localhost:8080/jha-builder.html</code>
       </strong>
+      <div id="version-note" style="font-size:11px;color:#555;margin-top:4px">Version 5 — loaded from GitHub Pages</div>
     </div>
     <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
       <div style="flex:1;min-width:280px">
@@ -535,17 +536,37 @@ function testAPI() {
   if(!key){setApiMsg("fail","Enter an API key first.");return;}
   ge("btn-test").disabled=true; ge("btn-test").textContent="Testing…";
   setApiMsg("info","Testing connection to api.anthropic.com…");
-  callAI("Install a pressure gauge on a wellhead",key).then(function(){
-    setApiMsg("ok","✓ Connected — use ✦ AI Suggest on any step");
-    ge("btn-ai-open").style.borderColor="#44bb66";
-    ge("btn-ai-open").style.color="#44bb66";
-    ge("btn-ai-open").textContent="✦ AI Ready";
-  }).catch(function(e){
-    if(isNetworkError(e.message)){
-      setApiMsg("fail","✗ Network error: "+e.message+". Check your API key has credits and api.anthropic.com is reachable.");
+
+  // Raw fetch so we can see exactly what fails
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key":key,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-client-side-api-key-access":"true"
+    },
+    body:JSON.stringify({
+      model:"claude-sonnet-4-5",
+      max_tokens:10,
+      messages:[{role:"user",content:"hi"}]
+    })
+  }).then(function(r){
+    setApiMsg("info","HTTP status: "+r.status+" — reading response…");
+    return r.json().then(function(body){ return {status:r.status, body:body}; });
+  }).then(function(res){
+    if(res.status===200){
+      setApiMsg("ok","✓ Connected (HTTP 200) — AI Suggest is ready");
+      ge("btn-ai-open").style.borderColor="#44bb66";
+      ge("btn-ai-open").style.color="#44bb66";
+      ge("btn-ai-open").textContent="✦ AI Ready";
     } else {
-      setApiMsg("fail","✗ "+e.message);
+      var msg=(res.body.error&&res.body.error.message)||JSON.stringify(res.body);
+      setApiMsg("fail","✗ HTTP "+res.status+": "+msg);
     }
+  }).catch(function(e){
+    // Show the raw error — crucial for debugging
+    setApiMsg("fail","✗ Fetch error: "+e.name+": "+e.message+" | origin: "+window.location.origin);
   }).then(function(){ ge("btn-test").disabled=false; ge("btn-test").textContent="Test Connection"; });
 }
 function setApiMsg(type,msg){
