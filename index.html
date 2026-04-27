@@ -6,9 +6,9 @@
 <title>JHA Builder — HSE-F0016 | Stream Flo Industries</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#0a0a0a;font-family:'Segoe UI',system-ui,sans-serif;color:#e0e0e0;font-size:14px;min-height:100vh}
+html,body{background:#060606;font-family:'Segoe UI',system-ui,sans-serif;color:#ffffff;font-size:14px;min-height:100vh}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#111}::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
-input,select,textarea{background:#111;border:1px solid #2a2a2a;border-radius:4px;color:#e0e0e0;font-size:13px;font-family:inherit;padding:6px 10px;width:100%}
+input,select,textarea{background:#161616;border:1px solid #383838;border-radius:4px;color:#ffffff;font-size:13px;font-family:inherit;padding:6px 10px;width:100%}
 input:focus,select:focus,textarea:focus{outline:none;border-color:#FFB800;box-shadow:0 0 0 2px rgba(255,184,0,.12)}
 textarea{resize:vertical;line-height:1.5}
 select option{background:#1a1a1a}
@@ -20,23 +20,23 @@ button{cursor:pointer;font-family:inherit;border:none}
 .btn-r{background:transparent;color:#ff4444;border:1px solid #ff444455}
 .btn-ok{background:#0d2016;color:#44bb66;border:1px solid #44bb6644}
 .btn-sm{padding:3px 9px;font-size:11px}
-.lbl{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;color:#555;text-transform:uppercase;margin-bottom:3px}
-.panel{background:#181818;border:1px solid #2a2a2a;border-radius:8px;margin-bottom:14px;overflow:hidden}
-.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#1a1a1a;border-bottom:1px solid #2a2a2a}
+.lbl{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;color:#888;text-transform:uppercase;margin-bottom:3px}
+.panel{background:#1c1c1c;border:1px solid #333;border-radius:8px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 12px #00000060}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#222;border-bottom:1px solid #333}
 .panel-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FFB800}
 .panel-body{padding:16px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 14px}
-.step-card{background:#181818;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden;margin-bottom:10px}
-.step-hdr{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#111;border-bottom:1px solid #2a2a2a}
+.step-card{background:#1c1c1c;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:10px;box-shadow:0 2px 8px #00000050}
+.step-hdr{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#161616;border-bottom:1px solid #333}
 .step-num-badge{width:30px;height:30px;background:#FFB800;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;flex-shrink:0}
 .step-body{padding:12px 14px}
-.haz-block{background:#161616;border:1px solid #222;border-radius:6px;padding:9px 11px;margin-bottom:6px}
-.ctl-row{display:grid;grid-template-columns:1fr 1fr 28px;gap:5px;margin-bottom:4px;padding:5px 8px;background:#111;border-radius:4px;border:1px solid #1e1e1e;align-items:end}
+.haz-block{background:#202020;border:1px solid #383838;border-radius:6px;padding:9px 11px;margin-bottom:6px}
+.ctl-row{display:grid;grid-template-columns:1fr 1fr 28px;gap:5px;margin-bottom:4px;padding:5px 8px;background:#181818;border-radius:4px;border:1px solid #333;align-items:end}
 .locked-card{background:#111;border:1px solid #1e1e1e;border-radius:8px;overflow:hidden;margin-bottom:8px;opacity:.65}
 .divider{display:flex;align-items:center;gap:10px;margin:10px 0}
 .divider hr{flex:1;border:none;border-top:1px solid #FFB80022}
-#topbar{background:#111;border-bottom:3px solid #FFB800;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px #000a}
+#topbar{background:#141414;border-bottom:3px solid #FFB800;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px #000000cc}
 #main{padding:16px 24px 40px;max-width:1180px;margin:0 auto}
 #status-bar{padding:9px 24px;font-size:13px;display:none}
 .tra-badge{border-radius:3px;padding:1px 8px;font-size:12px;font-weight:700;display:inline-block}
@@ -64,7 +64,7 @@ button{cursor:pointer;font-family:inherit;border:none}
   <div class="panel">
     <div class="panel-hdr" style="cursor:pointer" onclick="toggleSection('hdr-body','hdr-arrow')">
       <span class="panel-title">Document Header</span>
-      <span id="hdr-arrow" style="font-size:11px;color:#555">▼</span>
+      <span id="hdr-arrow" style="font-size:11px;color:#555">▲</span>
     </div>
     <div id="hdr-body" class="panel-body" style="display:block">
       <div style="margin-bottom:12px">
@@ -88,9 +88,9 @@ button{cursor:pointer;font-family:inherit;border:none}
       <input type="hidden" id="h-rdt" value=""/>
       <div onclick="toggleSection('docs-body','docs-arrow')" style="cursor:pointer;display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <span style="font-size:11px;font-weight:700;color:#FFB800;letter-spacing:.08em;text-transform:uppercase">Required Documentation &amp; Tools</span>
-        <span id="docs-arrow" style="font-size:11px;color:#555">▼</span>
+        <span id="docs-arrow" style="font-size:11px;color:#555">▲</span>
       </div>
-      <div id="docs-body" style="display:none">
+      <div id="docs-body" style="display:block">
         <div class="g2">
           <div><div class="lbl" style="margin-bottom:5px">Documentation</div><div id="docs-list"></div></div>
           <div><div class="lbl" style="margin-bottom:5px">Tools &amp; Equipment</div><div id="tools-list"></div></div>
@@ -111,6 +111,17 @@ button{cursor:pointer;font-family:inherit;border:none}
       <div id="locked-list"></div>
       <div class="divider"><hr><span style="font-size:11px;color:#FFB800;font-weight:600;white-space:nowrap">Your Steps</span><hr></div>
       <div id="step-list"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hdr" style="cursor:pointer" onclick="toggleSection('ref-body','ref-arrow')">
+      <span class="panel-title">Reference Documents — Corporate Standards</span>
+      <span id="ref-arrow" style="font-size:11px;color:#555">▲</span>
+    </div>
+    <div id="ref-body" class="panel-body" style="display:block">
+      <div style="font-size:12px;color:#888;margin-bottom:10px">Select all applicable HSE-CS corporate standards. These will be checked in the Reference Documents section of the JHA.</div>
+      <div id="ref-docs-grid" style="display:block;max-height:500px;overflow-y:auto;padding-right:4px"></div>
     </div>
   </div>
 
@@ -158,10 +169,10 @@ function ge(id){return document.getElementById(id);}
 function gv(id){var e=ge(id);return e?e.value:"";}
 function traStyle(v){
   v=parseInt(v,10)||9;
-  if(v<=4) return{bg:"#44bb66",fg:"#fff"};
-  if(v<=9) return{bg:"#FFB800",fg:"#000"};
-  if(v<=16) return{bg:"#CC7000",fg:"#fff"};
-  return{bg:"#C00000",fg:"#fff"};
+  // Match exact template TRA matrix: Yellow(1-3), Orange(4-10), Red(12-25)
+  if(v<=3)  return{bg:"#FFFF00",fg:"#000"};
+  if(v<=10) return{bg:"#ED7D31",fg:"#fff"};
+  return{bg:"#FF0000",fg:"#fff"};
 }
 function traBadge(v){
   var ts=traStyle(v);
@@ -186,13 +197,17 @@ function makeCtrlSelect(value,onChange){
 }
 function makeTRASelect(value,onChange){
   var sel=document.createElement("select");
-  sel.style.cssText="width:72px;font-weight:700;text-align:center;padding:4px 2px";
+  function updateSelColor(){
+    var v=parseInt(sel.value,10),ts=traStyle(v);
+    sel.style.cssText="width:72px;font-weight:700;text-align:center;padding:4px 2px;background:"+ts.bg+";color:"+ts.fg+";border-color:"+ts.bg;
+  }
   TRA_VALS.forEach(function(v){
     var opt=document.createElement("option");opt.value=v;opt.textContent=v;
     if(String(v)===String(value))opt.selected=true;
     sel.appendChild(opt);
   });
-  sel.onchange=function(){onChange(parseInt(sel.value,10));};
+  sel.onchange=function(){onChange(parseInt(sel.value,10));updateSelColor();};
+  updateSelColor();
   return sel;
 }
 function updateCounts(){
@@ -483,6 +498,78 @@ function makeAllStepRows(stepNum,desc,hazards){
   return out;
 }
 
+function escXmlRef(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function makeRefCell(slotVal, colIdx, isLastRow){
+  // Column widths and gridSpans from template
+  var widths=["4935","4649","4793"];
+  var spans=["2","5","3"];
+  var w=widths[colIdx], span=spans[colIdx];
+  var botSz=isLastRow?"12":"4";
+  // Left border: solid on col0, dotted on col1/2
+  var leftSz=colIdx===0?"12":"4";
+  // Right border: dotted on all
+  var bdr="<w:tcBorders>"
+    +"<w:top w:val=\"single\" w:sz=\"12\" w:space=\"0\" w:color=\"auto\"/>"
+    +"<w:left w:val=\"single\" w:sz=\""+leftSz+"\" w:space=\"0\" w:color=\"auto\"/>"
+    +"<w:bottom w:val=\"single\" w:sz=\""+botSz+"\" w:space=\"0\" w:color=\"auto\"/>"
+    +"<w:right w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/>"
+    +"</w:tcBorders>";
+  var checked="0", cbChar="&#x2610;", codeText="", labelText="";
+  if(slotVal){
+    checked="1"; cbChar="&#x2612;";
+    // Find matching standard
+    for(var i=0;i<HSE_CS_STANDARDS.length;i++){
+      if(HSE_CS_STANDARDS[i].code===slotVal){
+        codeText=escXmlRef(HSE_CS_STANDARDS[i].code);
+        labelText=escXmlRef(HSE_CS_STANDARDS[i].label);
+        break;
+      }
+    }
+  }
+  var para="<w:p w14:paraId=\"AABB"+String(colIdx)+"\" w14:textId=\"77777777\" w:rsidR=\"00666B22\" w:rsidRDefault=\"00000000\" w:rsidP=\"00666B22\">"
+    +"<w:pPr><w:ind w:left=\"0\" w:firstLine=\"0\"/><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr></w:pPr>"
+    +"<w:sdt><w:sdtPr><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr>"
+    +"<w:id w:val=\"99990\"/>"
+    +"<w14:checkbox><w14:checked w14:val=\""+checked+"\"/>"
+    +"<w14:checkedState w14:val=\"2612\" w14:font=\"MS Gothic\"/>"
+    +"<w14:uncheckedState w14:val=\"2610\" w14:font=\"MS Gothic\"/>"
+    +"</w14:checkbox></w:sdtPr>"
+    +"<w:sdtContent><w:r><w:rPr><w:rFonts w:ascii=\"MS Gothic\" w:eastAsia=\"MS Gothic\" w:hAnsi=\"MS Gothic\" w:hint=\"eastAsia\"/></w:rPr>"
+    +"<w:t>"+(checked==="1"?"&#x2612;":"&#x2610;")+"</w:t></w:r></w:sdtContent></w:sdt>"
+    +(codeText?"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>"
+      +"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t>"+codeText+"</w:t></w:r>"
+      +"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t xml:space=\"preserve\"> </w:t></w:r>"
+      +"<w:r><w:rPr><w:rFonts w:eastAsia=\"Times New Roman\"/></w:rPr><w:t>"+labelText+"</w:t></w:r>":"")
+    +"</w:p>";
+  return "<w:tc><w:tcPr>"
+    +"<w:tcW w:w=\""+w+"\" w:type=\"dxa\"/>"
+    +"<w:gridSpan w:val=\""+span+"\"/>"
+    +bdr
+    +"<w:vAlign w:val=\"center\"/></w:tcPr>"
+    +para+"</w:tc>";
+}
+
+function makeRefRows(slots){
+  var out="";
+  var numRows=13;
+  for(var row=0;row<numRows;row++){
+    var isLast=row===numRows-1;
+    var s0=slots[row*3]||"";
+    var s1=slots[row*3+1]||"";
+    var s2=slots[row*3+2]||"";
+    out+="<w:tr w:rsidR=\"00666B22\" w14:paraId=\"AACC"+String(row)+"\" w14:textId=\"77777777\">"
+      +"<w:tblPrEx><w:jc w:val=\"left\"/></w:tblPrEx>"
+      +"<w:trPr><w:trHeight w:val=\"144\"/></w:trPr>"
+      +makeRefCell(s0,0,isLast)
+      +makeRefCell(s1,1,isLast)
+      +makeRefCell(s2,2,isLast)
+      +"</w:tr>";
+  }
+  return out;
+}
+
+
 function fillXML(xmlStr,userData){
   var reps=[];
   function repPara(pid,newPara){var m=xmlStr.indexOf('paraId="'+pid+'"');if(m<0)return;var ps=xmlStr.lastIndexOf('<w:p ',m),pe=xmlStr.indexOf('</w:p>',ps)+6;reps.push([ps,pe,newPara]);}
@@ -501,6 +588,18 @@ function fillXML(xmlStr,userData){
   ["3D90E58C","2BB678A0","58924EDF","3B2DF33E","4E3C5F97","6BF8BAA6","7A27A959"].forEach(function(pid,i){insAfterSdt(pid,userData.tools[i]);});
   var r7m=xmlStr.indexOf('paraId="015C3B56"'),row7s=r7m>=0?xmlStr.lastIndexOf('<w:tr ',r7m):-1;
   if(row7s>=0){var tblEnd=xmlStr.indexOf('</w:tbl>',row7s);var stepsXml="";userData.steps.forEach(function(step,si){stepsXml+=makeAllStepRows(LOCKED.length+1+si,step.desc,step.hazards);});reps.push([row7s,tblEnd+8,stepsXml+"</w:tbl>"]);}
+  // Replace reference document rows (rows 13-25) with user slot selections
+  if(userData.refSlots){
+    var row13m=xmlStr.indexOf("paraId=\"6342D933\"");
+    var row25m=xmlStr.indexOf("paraId=\"2124E548\"");
+    if(row13m>=0 && row25m>=0){
+      var row13s=xmlStr.lastIndexOf("<w:tr ",row13m);
+      var row25e=xmlStr.indexOf("</w:tr>",row25m)+7;
+      var generatedRows=makeRefRows(userData.refSlots);
+      reps.push([row13s,row25e,generatedRows]);
+    }
+  }
+
   reps.sort(function(a,b){return b[0]-a[0];});
   var result=xmlStr;reps.forEach(function(r){result=result.slice(0,r[0])+r[2]+result.slice(r[1]);});
   return result;
@@ -516,6 +615,7 @@ function generate(){
     completedDate:gv("h-cdt"),approvedDate:gv("h-adt"),reviewDate:gv("h-rdt"),
     docs:[0,1,2,3,4,5,6].map(function(i){return gv("doc-"+i);}),
     tools:[0,1,2,3,4,5,6].map(function(i){return gv("tool-"+i);}),
+    refSlots:refSlots.slice(),
     steps:steps.map(function(s){return{desc:s.desc,hazards:s.hazards};})
   };
   var templateBytes=b64ToUint8(TEMPLATE_B64);
@@ -542,12 +642,119 @@ function generate(){
   }).then(function(){genBtn.disabled=false;genBtn.textContent="↓ Generate .docx";});
 }
 
+// Full HSE-CS corporate standards list from TOC
+var HSE_CS_STANDARDS=[
+  {code:"HSE-CS-100",label:"Government Regulations, Legal and Other Compliance Requirements"},
+  {code:"HSE-CS-101",label:"Hazard Identification and Control"},
+  {code:"HSE-CS-102",label:"Inspection"},
+  {code:"HSE-CS-103",label:"Hazard Reporting"},
+  {code:"HSE-CS-104",label:"Communication, Participation and Consultation"},
+  {code:"HSE-CS-105",label:"Personal Protective Equipment"},
+  {code:"HSE-CS-106",label:"Safety Orientation and Training"},
+  {code:"HSE-CS-107",label:"Document Control"},
+  {code:"HSE-CS-108",label:"Management of Change"},
+  {code:"HSE-CS-109",label:"Incident Reporting and Investigation"},
+  {code:"HSE-CS-110",label:"Nonconformity, Corrective and Preventive Action"},
+  {code:"HSE-CS-111",label:"HSE Management System Evaluation"},
+  {code:"HSE-CS-112",label:"Emergency Preparedness"},
+  {code:"HSE-CS-113",label:"Fit for Duty"},
+  {code:"HSE-CS-114",label:"Modified Work Program"},
+  {code:"HSE-CS-115",label:"Working Alone"},
+  {code:"HSE-CS-116",label:"Contractor Management"},
+  {code:"HSE-CS-117",label:"Electrical Safety Program"},
+  {code:"HSE-CS-118",label:"Hazardous Materials"},
+  {code:"HSE-CS-119",label:"Blood Borne Pathogens Exposure"},
+  {code:"HSE-CS-120",label:"Hydrogen Sulfide (H2S)"},
+  {code:"HSE-CS-121",label:"Naturally Occurring Radioactive Materials"},
+  {code:"HSE-CS-122",label:"Personal Gas Monitors"},
+  {code:"HSE-CS-123",label:"Respiratory Protection Program"},
+  {code:"HSE-CS-124",label:"Hearing Conservation"},
+  {code:"HSE-CS-125",label:"Thermal Exposure"},
+  {code:"HSE-CS-126",label:"Ergonomics"},
+  {code:"HSE-CS-127",label:"Driving Safety"},
+  {code:"HSE-CS-128",label:"Powered Mobile Equipment"},
+  {code:"HSE-CS-129",label:"Warehousing"},
+  {code:"HSE-CS-130",label:"Manual Material Handling"},
+  {code:"HSE-CS-131",label:"Crane, Hoist and Rigging"},
+  {code:"HSE-CS-132",label:"Tools, Equipment and Machinery"},
+  {code:"HSE-CS-133",label:"Control of Hazardous Energy"},
+  {code:"HSE-CS-134",label:"Ladder Safety"},
+  {code:"HSE-CS-135",label:"Hot Work"},
+  {code:"HSE-CS-136",label:"Field Service Safety"},
+  {code:"HSE-CS-137",label:"Tear Down of Used Equipment"},
+  {code:"HSE-CS-138",label:"Parts Washer Safety"},
+  {code:"HSE-CS-139",label:"Pressure Testing Safety"},
+  {code:"HSE-CS-140",label:"Static Electricity Safety"},
+  {code:"HSE-CS-141",label:"Machine Guarding"},
+  {code:"HSE-CS-142",label:"Industrial Hygiene"},
+  {code:"HSE-CS-143",label:"Loading and Unloading of Transport Vehicles"},
+  {code:"HSE-CS-144",label:"Dropped Objects Program"},
+  {code:"HSE-CS-145",label:"Jib Crane Load Test"},
+  {code:"HSE-CS-146",label:"Housekeeping"},
+  {code:"HSE-CS-147",label:"Crystalline Silica"},
+  {code:"HSE-CS-148",label:"Life Saving Rules"},
+  {code:"HSE-CS-149",label:"Behavior Based Safety"},
+  {code:"HSE-CS-150",label:"Joint Work Site Health and Safety Committee"},
+  {code:"HSE-CS-151",label:"Confined Space"},
+  {code:"HSE-CS-152",label:"Grinding Operations"},
+  {code:"HSE-CS-153",label:"Working at Heights"},
+  {code:"HSE-CS-154",label:"Infectious Diseases"},
+  {code:"HSE-CS-156",label:"SWOT Analysis"},
+  {code:"HSE-CS-157",label:"General Picker Crane Operation"},
+  {code:"HSE-CS-159",label:"Crisis Management"},
+  {code:"HSE-CS-300",label:"Aspects, Impacts, Risks and Opportunities"},
+  {code:"HSE-CS-301",label:"General Waste Management"},
+  {code:"HSE-CS-302",label:"Equipment and Product Life Cycles"}
+];
+
+// 39 reference slots — user picks a standard (or blank) for each
+// refSlots[i] = "" (blank) or "HSE-CS-XXX" (selected code)
+var refSlots=[];
+(function(){
+  for(var i=0;i<39;i++) refSlots[i]="";
+})();
+
+function makeRefSelect(slotIdx){
+  var sel=document.createElement("select");
+  sel.style.cssText="font-size:12px;padding:4px 6px;background:#161616;color:#fff;border:1px solid #383838;border-radius:4px;width:100%";
+  var bl=document.createElement("option"); bl.value=""; bl.textContent="-- none --"; sel.appendChild(bl);
+  HSE_CS_STANDARDS.forEach(function(s){
+    var opt=document.createElement("option");
+    opt.value=s.code;
+    opt.textContent=s.code+" — "+s.label;
+    if(s.code===refSlots[slotIdx]) opt.selected=true;
+    sel.appendChild(opt);
+  });
+  sel.onchange=function(){ refSlots[slotIdx]=sel.value; };
+  return sel;
+}
+
+function renderRefDocs(){
+  var grid=ge("ref-docs-grid");
+  if(!grid) return;
+  grid.innerHTML="";
+  for(var i=0;i<39;i++){
+    (function(slotIdx){
+      var row=document.createElement("div");
+      row.style.cssText="display:flex;align-items:center;gap:8px;margin-bottom:5px";
+      var num=document.createElement("span");
+      num.style.cssText="font-size:11px;color:#555;width:22px;flex-shrink:0;text-align:right";
+      num.textContent=(slotIdx+1);
+      var sel=makeRefSelect(slotIdx);
+      row.appendChild(num); row.appendChild(sel);
+      grid.appendChild(row);
+    })(i);
+  }
+}
+
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (function(){
   var today=new Date().toISOString().split("T")[0];
   ge("h-cdt").value=today;
 
   renderDocsTools();
+  renderRefDocs();
   renderLocked();
   steps.push(mkStep());
   renderAll();
