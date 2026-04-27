@@ -161,7 +161,7 @@ var _id=500;
 function uid(){return String(_id++);}
 function mkControl(o){o=o||{};return{id:uid(),text:o.text||"",comment:o.comment||""};}
 function mkHazard(o){o=o||{};return{id:uid(),type:o.type||"SH",mech:o.mech||o.mechanism||"",comment:o.comment||"",preTRA:o.preTRA||9,postTRA:o.postTRA||4,controls:(o.controls||[]).map(function(c){return mkControl(c);})};}
-function mkStep(){return{id:uid(),desc:"",hazards:[mkHazard()]};}
+function mkStep(){return{id:uid(),desc:"",hazards:[mkHazard()],imageData:null,imageName:null,imageType:null,imageCx:0,imageCy:0};}
 var steps=[];
 
 // ── UTILITIES ─────────────────────────────────────────────────────────────────
@@ -256,6 +256,41 @@ function buildStepCard(step,num){
   ta.placeholder="e.g. Make Up Connections: Thread and torque all tubing connections to manufacturer specifications…";
   ta.oninput=function(){step.desc=ta.value;};
   dw.appendChild(ta);body.appendChild(dw);
+
+  // Image upload section
+  var imgDiv=document.createElement("div");imgDiv.style.cssText="margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap";
+  var imgLabel=document.createElement("div");imgLabel.style.flex="1";
+  var imgLbl=document.createElement("label");imgLbl.className="lbl";imgLbl.textContent="Step Photo (optional — placed in Equipment column)";
+  imgLabel.appendChild(imgLbl);
+  var imgInput=document.createElement("input");imgInput.type="file";imgInput.accept="image/*";
+  imgInput.style.cssText="background:#161616;border:1px dashed #383838;border-radius:4px;padding:6px;color:#fff;font-size:12px;width:100%";
+  (function(s){
+    imgInput.onchange=function(){
+      var file=imgInput.files[0];
+      if(!file)return;
+      var reader=new FileReader();
+      reader.onload=function(e){
+        s.imageData=e.target.result;s.imageName=file.name;s.imageType=file.type;
+        var tmpImg=new Image();
+        tmpImg.onload=function(){s.imageCx=tmpImg.naturalWidth;s.imageCy=tmpImg.naturalHeight;renderAll();};
+        tmpImg.src=e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+  })(step);
+  imgLabel.appendChild(imgInput);
+  if(step.imageData){
+    var preview=document.createElement("img");
+    preview.src=step.imageData;
+    preview.style.cssText="max-height:80px;max-width:150px;border-radius:4px;border:1px solid #383838;object-fit:contain;background:#111";
+    var clearBtn=document.createElement("button");clearBtn.className="btn btn-r btn-sm";clearBtn.textContent="× Remove";
+    (function(s){clearBtn.onclick=function(){s.imageData=null;s.imageName=null;s.imageType=null;renderAll();};
+    })(step);
+    imgDiv.appendChild(imgLabel);imgDiv.appendChild(preview);imgDiv.appendChild(clearBtn);
+  } else {
+    imgDiv.appendChild(imgLabel);
+  }
+  body.appendChild(imgDiv);
 
   var hazHdr=document.createElement("div");hazHdr.style.cssText="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px";
   var hazTitle=document.createElement("span");hazTitle.style.cssText="font-size:11px;font-weight:700;color:#FFB800;letter-spacing:.06em;text-transform:uppercase";
@@ -435,10 +470,14 @@ function makeAllStepRows(stepNum,desc,hazards){
       +"<w:vAlign w:val=\"center\"/></w:tcPr>"+descXml+"</w:tc>";
 
     // Col 2: equipment (empty, vMerge)
+    // Col 2: equipment/photo — show image on first hazard row only
+    var imgPara="<w:p><w:pPr><w:pStyle w:val=\"Heading3\"/><w:jc w:val=\"center\"/></w:pPr>"
+      +(isFirst&&haz.imageXml?haz.imageXml:"")
+      +"</w:p>";
     var c2="<w:tc><w:tcPr><w:tcW w:w=\"2544\" w:type=\"dxa\"/><w:vMerge"+vm+"/>"+mBdrR
       +"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"FFFFFF\" w:themeFill=\"background1\"/>"
       +"<w:vAlign w:val=\"center\"/></w:tcPr>"
-      +"<w:p><w:pPr><w:pStyle w:val=\"Heading3\"/></w:pPr></w:p></w:tc>";
+      +imgPara+"</w:tc>";
 
     // Col 3: hazard type
     var c3="<w:tc><w:tcPr><w:tcW w:w=\"817\" w:type=\"dxa\"/>"+LR
@@ -570,6 +609,20 @@ function makeRefRows(slots){
 }
 
 
+function fillHeader(hdrStr, userData){
+  // The title paragraph ends with " – </w:t></w:r></w:p>"
+  // We append the scope text as a new bold run before </w:p>
+  var anchor=" – </w:t></w:r></w:p>";
+  var idx=hdrStr.indexOf(anchor);
+  if(idx<0) return hdrStr;
+  var scope=escXml(userData.scope||"");
+  if(!scope) return hdrStr;
+  var newRun="<w:r><w:rPr><w:b/><w:sz w:val=\"24\"/><w:szCs w:val=\"24\"/></w:rPr>"
+    +"<w:t xml:space=\"preserve\">"+scope+"</w:t></w:r>";
+  return hdrStr.slice(0,idx+anchor.length-"</w:p>".length)+newRun+"</w:p>"+hdrStr.slice(idx+anchor.length);
+}
+
+
 function fillXML(xmlStr,userData){
   var reps=[];
   function repPara(pid,newPara){var m=xmlStr.indexOf('paraId="'+pid+'"');if(m<0)return;var ps=xmlStr.lastIndexOf('<w:p ',m),pe=xmlStr.indexOf('</w:p>',ps)+6;reps.push([ps,pe,newPara]);}
@@ -608,6 +661,56 @@ function fillXML(xmlStr,userData){
 function generate(){
   var genBtn=ge("btn-gen");genBtn.disabled=true;genBtn.textContent="Building…";
   setStatus("loading","Filling template — please wait…");
+  // Process images: assign rIds starting at 22, compute scaled dimensions
+  var IMG_COL_EMU=1501090; // safe width inside 2544 dxa column
+  var nextRid=22;
+  var pendingImages=[]; // {rid, dataUrl, ext, mimeType}
+
+  var processedSteps=steps.map(function(s){
+    var stHazards=s.hazards;
+    var imageXml="";
+    if(s.imageData){
+      var rid="rId"+nextRid++;
+      var ext=s.imageType==="image/png"?"png":s.imageType==="image/jpeg"?"jpeg":s.imageType==="image/gif"?"gif":"png";
+      pendingImages.push({rid:rid,dataUrl:s.imageData,ext:ext,mimeType:s.imageType||"image/png"});
+      // Parse image dimensions from data URL using Image element
+      // We store cx/cy when image loads — for now use 4:3 default then correct
+      var cx=IMG_COL_EMU;
+      var cy=Math.round(cx*0.75); // 4:3 default; corrected below if size known
+      if(s.imageCx&&s.imageCy){
+        var aspect=s.imageCy/s.imageCx;
+        cy=Math.round(cx*aspect);
+      }
+      var imgNum=nextRid-22+100;
+      imageXml="<w:r><w:rPr/>"
+        +"<w:drawing>"
+        +"<wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\">"
+        +"<wp:extent cx=\""+cx+"\" cy=\""+cy+"\"/>"
+        +"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>"
+        +"<wp:docPr id=\""+imgNum+"\" name=\"StepImage"+imgNum+"\"/>"
+        +"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>"
+        +"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">"
+        +"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">"
+        +"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">"
+        +"<pic:nvPicPr><pic:cNvPr id=\""+imgNum+"\" name=\"StepImage"+imgNum+"\"/>"
+        +"<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\"/></pic:cNvPicPr></pic:nvPicPr>"
+        +"<pic:blipFill>"
+        +"<a:blip r:embed=\""+rid+"\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"/>"
+        +"<a:stretch><a:fillRect/></a:stretch></pic:blipFill>"
+        +"<pic:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\""+cx+"\" cy=\""+cy+"\"/></a:xfrm>"
+        +"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/></pic:spPr>"
+        +"</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>";
+      // Attach imageXml to first hazard
+      stHazards=s.hazards.map(function(h,hi){
+        var hNew={id:h.id,type:h.type,mech:h.mech,comment:h.comment,preTRA:h.preTRA,postTRA:h.postTRA,controls:h.controls};
+        if(hi===0) hNew.imageXml=imageXml;
+        return hNew;
+      });
+      if(!stHazards.length) stHazards=[{type:"SH",mech:"",comment:"",preTRA:9,postTRA:4,controls:[],imageXml:imageXml}];
+    }
+    return{desc:s.desc,hazards:stHazards};
+  });
+
   var userData={
     scope:gv("h-scope"),company:gv("h-company")||"Stream-Flo Group of Companies",
     dept:gv("h-dept")||"Aftermarket Service",location:gv("h-loc"),
@@ -616,7 +719,7 @@ function generate(){
     docs:[0,1,2,3,4,5,6].map(function(i){return gv("doc-"+i);}),
     tools:[0,1,2,3,4,5,6].map(function(i){return gv("tool-"+i);}),
     refSlots:refSlots.slice(),
-    steps:steps.map(function(s){return{desc:s.desc,hazards:s.hazards};})
+    steps:processedSteps
   };
   var templateBytes=b64ToUint8(TEMPLATE_B64);
   JSZip.loadAsync(templateBytes).then(function(zip){
@@ -625,6 +728,26 @@ function generate(){
       return zip.file("word/document.xml").async("string");
     }).then(function(xmlStr){
       zip.file("word/document.xml",fillXML(xmlStr,userData),{compression:"DEFLATE",compressionOptions:{level:6}});
+      return zip.file("word/header1.xml").async("string");
+    }).then(function(hdrStr){
+      zip.file("word/header1.xml",fillHeader(hdrStr,userData),{compression:"DEFLATE"});
+      return zip.file("word/_rels/document.xml.rels").async("string");
+    }).then(function(relsStr){
+      // Add image relationships and files to ZIP
+      if(pendingImages.length>0){
+        var newRels="";
+        pendingImages.forEach(function(img){
+          var fname="image_"+img.rid+"."+img.ext;
+          // Add image file
+          var b64data=img.dataUrl.split(",")[1];
+          zip.file("word/media/"+fname,b64ToUint8(b64data));
+          // Add relationship
+          newRels+="<Relationship Id=\""+img.rid+"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/"+fname+"\"/>";
+        });
+        // Insert new rels before </Relationships>
+        relsStr=relsStr.replace("</Relationships>",newRels+"</Relationships>");
+        zip.file("word/_rels/document.xml.rels",relsStr,{compression:"DEFLATE"});
+      }
       return zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",compression:"DEFLATE",compressionOptions:{level:6}});
     });
   }).then(function(blob){
