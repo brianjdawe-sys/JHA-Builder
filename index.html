@@ -162,7 +162,7 @@ body.dark-mode .toggle-thumb{transform:translateX(18px)}
     <div id="hdr-body" class="panel-body" style="display:block">
       <div style="margin-bottom:12px">
         <label class="lbl">JHA Title / Scope of Work</label>
-        <input id="h-scope" placeholder="e.g. Setting and Retrieving a Test Plug / Combination Running Tool"/>
+        <input id="h-scope" placeholder="e.g. Setting and Retrieving a Test Plug" maxlength="40" title="40 character limit for header display"/>
       </div>
       <div class="g3" style="margin-bottom:10px">
         <div><label class="lbl">Company</label><input id="h-company" value="Stream-Flo Group of Companies"/></div>
@@ -608,11 +608,27 @@ function renderLocked(){
   });
 }
 
+function makeDocToolInput(id, placeholder, maxLen) {
+  var wrap=document.createElement("div");wrap.style.cssText="position:relative;margin-bottom:6px";
+  var inp=document.createElement("input");
+  inp.id=id; inp.placeholder=placeholder; inp.maxLength=maxLen;
+  inp.style.cssText="width:100%;padding-right:36px";
+  var ctr=document.createElement("span");
+  ctr.style.cssText="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--text-muted);pointer-events:none";
+  ctr.textContent="0/"+maxLen;
+  inp.oninput=function(){
+    var len=inp.value.length;
+    ctr.textContent=len+"/"+maxLen;
+    ctr.style.color=len>maxLen*0.85?"#ff4444":"var(--text-muted)";
+  };
+  wrap.appendChild(inp); wrap.appendChild(ctr);
+  return wrap;
+}
 function renderDocsTools(){
   var dl=ge("docs-list"),tl=ge("tools-list");
   for(var i=0;i<7;i++){
-    var di=document.createElement("input");di.id="doc-"+i;di.style.marginBottom="4px";di.placeholder="Document "+(i+1);dl.appendChild(di);
-    var ti=document.createElement("input");ti.id="tool-"+i;ti.style.marginBottom="4px";ti.placeholder="Tool "+(i+1);tl.appendChild(ti);
+    dl.appendChild(makeDocToolInput("doc-"+i,"Document "+(i+1),30));
+    tl.appendChild(makeDocToolInput("tool-"+i,"Tool "+(i+1),28));
   }
 }
 
@@ -764,7 +780,7 @@ function makeAllStepRows(stepNum,desc,hazards,stepLabel){
 
 function escXmlRef(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-function makeRefCell(slotVal, colIdx, isLastRow){
+function makeRefCell(slotVal, colIdx, isLastRow, rowIdx){
   // Column widths and gridSpans from template
   var widths=["4935","4649","4793"];
   var spans=["2","5","3"];
@@ -819,15 +835,16 @@ function makeRefRows(slots){
   var numRows=13;
   for(var row=0;row<numRows;row++){
     var isLast=row===numRows-1;
+    var isFirst=row===0;
     var s0=slots[row*3]||"";
     var s1=slots[row*3+1]||"";
     var s2=slots[row*3+2]||"";
     out+="<w:tr w:rsidR=\"00666B22\" w14:paraId=\"AACC"+String(row)+"\" w14:textId=\"77777777\">"
       +"<w:tblPrEx><w:jc w:val=\"left\"/></w:tblPrEx>"
       +"<w:trPr><w:trHeight w:val=\"144\"/></w:trPr>"
-      +makeRefCell(s0,0,isLast)
-      +makeRefCell(s1,1,isLast)
-      +makeRefCell(s2,2,isLast)
+      +makeRefCell(s0,0,isLast,row)
+      +makeRefCell(s1,1,isLast,row)
+      +makeRefCell(s2,2,isLast,row)
       +"</w:tr>";
   }
   return out;
@@ -884,6 +901,28 @@ function fillXML(xmlStr,userData){
 
   reps.sort(function(a,b){return b[0]-a[0];});
   var result=xmlStr;reps.forEach(function(r){result=result.slice(0,r[0])+r[2]+result.slice(r[1]);});
+
+  // Add page break before the Reference Document header row (row 12, para 31B525AF)
+  // Do this as a simple string replace AFTER all reps are applied
+  // Inject pageBreakBefore into the Reference Document header paragraph's pPr
+  var _rp=result.indexOf("paraId=\"31B525AF\"");
+  if(_rp>=0){
+    var _pp=result.indexOf("<w:pPr>",result.lastIndexOf("<w:p ",_rp));
+    if(_pp>=0&&_pp<_rp+200){
+      result=result.slice(0,_pp+7)+"<w:pageBreakBefore/>"+result.slice(_pp+7);
+    }
+  }
+
+  // Shrink the mandatory trailing paragraph (after last table, before sectPr) to 1pt
+  // This prevents Word from rendering it as a blank page
+  var trailPid=result.indexOf("paraId=\"0E2D240D\"");
+  if(trailPid>=0){
+    var tps=result.lastIndexOf("<w:p ",trailPid);
+    var tpe=result.indexOf("</w:p>",tps)+6;
+    var miniPara="<w:p w14:paraId=\"0E2D240D\" w14:textId=\"77777777\" w:rsidR=\"00403E3C\" w:rsidRDefault=\"00403E3C\"><w:pPr><w:ind w:left=\"0\" w:firstLine=\"0\"/><w:rPr><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>";
+    result=result.slice(0,tps)+miniPara+result.slice(tpe);
+  }
+
   return result;
 }
 
