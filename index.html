@@ -5,43 +5,126 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>SFI JHA Building Tool</title>
 <style>
+/* ── CSS Variables for theme switching ───────────────────────────────────── */
+:root {
+  --bg-page:       #f0f2f5;
+  --bg-panel:      #ffffff;
+  --bg-panel-hdr:  #f5f5f5;
+  --bg-step:       #ffffff;
+  --bg-step-hdr:   #f0f0f0;
+  --bg-haz:        #f7f8fa;
+  --bg-ctl:        #f2f4f7;
+  --bg-locked:     #f5f5f5;
+  --bg-input:      #ffffff;
+  --bg-topbar:     #1a1a1a;
+  --border:        #ddd;
+  --border-input:  #ccc;
+  --text-main:     #1a1a1a;
+  --text-label:    #555;
+  --text-muted:    #999;
+  --text-header:   #B8860B;
+  --header-size:   13px;
+  --shadow:        0 2px 8px #0000001a;
+  --topbar-shadow: 0 4px 12px #00000033;
+  --divider:       #FFB80033;
+  --locked-border: #e0e0e0;
+  --btn-g-color:   #555;
+  --btn-g-border:  #ccc;
+  --scrollbar-bg:  #e0e0e0;
+  --scrollbar-thumb:#bbb;
+}
+body.dark-mode {
+  --bg-page:       #060606;
+  --bg-panel:      #1c1c1c;
+  --bg-panel-hdr:  #222;
+  --bg-step:       #1c1c1c;
+  --bg-step-hdr:   #161616;
+  --bg-haz:        #202020;
+  --bg-ctl:        #181818;
+  --bg-locked:     #111;
+  --bg-input:      #161616;
+  --bg-topbar:     #141414;
+  --border:        #333;
+  --border-input:  #383838;
+  --text-main:     #ffffff;
+  --text-label:    #aaaaaa;
+  --text-muted:    #666;
+  --text-header:   #FFB800;
+  --header-size:   13px;
+  --shadow:        0 2px 12px #00000060;
+  --topbar-shadow: 0 4px 20px #000000cc;
+  --divider:       #FFB80022;
+  --locked-border: #1e1e1e;
+  --btn-g-color:   #777;
+  --btn-g-border:  #444;
+  --scrollbar-bg:  #111;
+  --scrollbar-thumb:#333;
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#060606;font-family:'Segoe UI',system-ui,sans-serif;color:#ffffff;font-size:14px;min-height:100vh}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#111}::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
-input,select,textarea{background:#161616;border:1px solid #383838;border-radius:4px;color:#ffffff;font-size:13px;font-family:inherit;padding:6px 10px;width:100%}
-input:focus,select:focus,textarea:focus{outline:none;border-color:#FFB800;box-shadow:0 0 0 2px rgba(255,184,0,.12)}
+html,body{background:var(--bg-page);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text-main);font-size:14px;min-height:100vh;transition:background .2s,color .2s}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--scrollbar-bg)}
+::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:3px}
+
+input,select,textarea{
+  background:var(--bg-input);border:1px solid var(--border-input);border-radius:4px;
+  color:var(--text-main);font-size:13px;font-family:inherit;padding:6px 10px;width:100%;
+  transition:background .2s,color .2s,border-color .2s
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#FFB800;box-shadow:0 0 0 2px rgba(255,184,0,.15)}
 textarea{resize:vertical;line-height:1.5}
-select option{background:#1a1a1a}
+select option{background:var(--bg-input);color:var(--text-main)}
 optgroup{color:#FFB800;font-style:normal}
 button{cursor:pointer;font-family:inherit;border:none}
+
 .btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;font-size:13px;font-weight:600;border-radius:4px;white-space:nowrap}
 .btn-y{background:#FFB800;color:#000;font-weight:700}
-.btn-g{background:transparent;color:#555;border:1px solid #2a2a2a}
+.btn-g{background:transparent;color:var(--btn-g-color);border:1px solid var(--btn-g-border)}
 .btn-r{background:transparent;color:#ff4444;border:1px solid #ff444455}
 .btn-ok{background:#0d2016;color:#44bb66;border:1px solid #44bb6644}
 .btn-sm{padding:3px 9px;font-size:11px}
-.lbl{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;color:#888;text-transform:uppercase;margin-bottom:3px}
-.panel{background:#1c1c1c;border:1px solid #333;border-radius:8px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 12px #00000060}
-.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#222;border-bottom:1px solid #333}
-.panel-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FFB800}
+
+.lbl{
+  display:block;font-size:var(--header-size);font-weight:700;letter-spacing:.07em;
+  color:var(--text-header);text-transform:uppercase;margin-bottom:4px
+}
+
+.panel{background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow);transition:background .2s,border-color .2s}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--bg-panel-hdr);border-bottom:1px solid var(--border)}
+.panel-title{font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-header)}
 .panel-body{padding:16px}
+
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 14px}
-.step-card{background:#1c1c1c;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:10px;box-shadow:0 2px 8px #00000050}
-.step-hdr{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#161616;border-bottom:1px solid #333}
+
+.step-card{background:var(--bg-step);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px;box-shadow:var(--shadow);transition:background .2s}
+.step-hdr{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--bg-step-hdr);border-bottom:1px solid var(--border)}
 .step-num-badge{width:30px;height:30px;background:#FFB800;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;flex-shrink:0}
+
 .step-body{padding:12px 14px}
-.haz-block{background:#202020;border:1px solid #383838;border-radius:6px;padding:9px 11px;margin-bottom:6px}
-.ctl-row{display:grid;grid-template-columns:1fr 1fr 28px;gap:5px;margin-bottom:4px;padding:5px 8px;background:#181818;border-radius:4px;border:1px solid #333;align-items:end}
-.locked-card{background:#111;border:1px solid #1e1e1e;border-radius:8px;overflow:hidden;margin-bottom:8px;opacity:.65}
+.haz-block{background:var(--bg-haz);border:1px solid var(--border);border-radius:6px;padding:9px 11px;margin-bottom:6px;transition:background .2s}
+.ctl-row{display:grid;grid-template-columns:1fr 1fr 28px;gap:5px;margin-bottom:4px;padding:5px 8px;background:var(--bg-ctl);border-radius:4px;border:1px solid var(--border);align-items:end;transition:background .2s}
+
+.locked-card{background:var(--bg-locked);border:1px solid var(--locked-border);border-radius:8px;overflow:hidden;margin-bottom:8px;opacity:.65}
 .divider{display:flex;align-items:center;gap:10px;margin:10px 0}
-.divider hr{flex:1;border:none;border-top:1px solid #FFB80022}
-#topbar{background:#141414;border-bottom:3px solid #FFB800;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px #000000cc}
+.divider hr{flex:1;border:none;border-top:1px solid var(--divider)}
+
+#topbar{background:var(--bg-topbar);border-bottom:3px solid #FFB800;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--topbar-shadow)}
 #main{padding:16px 24px 40px;max-width:1180px;margin:0 auto}
 #status-bar{padding:9px 24px;font-size:13px;display:none}
+
 .tra-badge{border-radius:3px;padding:1px 8px;font-size:12px;font-weight:700;display:inline-block}
 .icon-btn{background:transparent;border:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:4px;font-size:16px}
 .icon-btn:hover{background:#ff444422}
+
+/* Theme toggle switch */
+.theme-toggle{display:flex;align-items:center;gap:8px;cursor:pointer}
+.theme-toggle span{font-size:12px;color:#aaa;user-select:none}
+.toggle-track{width:40px;height:22px;background:#333;border-radius:11px;position:relative;transition:background .25s;cursor:pointer;border:1px solid #555}
+body.dark-mode .toggle-track{background:#FFB800;border-color:#e6a500}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 1px 3px #0005}
+body.dark-mode .toggle-thumb{transform:translateX(18px)}
 </style>
 </head>
 <body>
@@ -51,10 +134,20 @@ button{cursor:pointer;font-family:inherit;border:none}
     <div style="width:44px;height:44px;background:#FFB800;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000;flex-shrink:0;border:2px solid #000">SFI</div>
     <div>
       <div style="font-size:16px;font-weight:700;color:#f2f2f2">SFI JHA Building Tool</div>
-      <div style="font-size:11px;color:#555;margin-top:1px">HSE-F0016 Rev 4 &nbsp;·&nbsp; <span id="lbl-count">2</span> Steps</div>
+      <div style="font-size:11px;color:#aaa;margin-top:1px">HSE-F0016 Rev 4 &nbsp;·&nbsp; <span id="lbl-count">2</span> Steps</div>
     </div>
   </div>
-  <button id="btn-gen" class="btn btn-y" style="padding:9px 20px;font-size:13px;box-shadow:0 4px 12px #FFB80033" onclick="generate()">↓ Generate .docx</button>
+  <div style="display:flex;gap:12px;align-items:center">
+    <label class="btn btn-g" style="cursor:pointer;font-size:12px;padding:6px 12px" title="Upload an existing JHA .docx to load its data">
+      📂 Load Existing JHA
+      <input type="file" accept=".docx" id="load-jha-input" style="display:none" onchange="loadExistingJHA(this)"/>
+    </label>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+      <span id="theme-lbl">☾ Dark</span>
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    </div>
+    <button id="btn-gen" class="btn btn-y" style="padding:9px 20px;font-size:13px;box-shadow:0 4px 12px #FFB80033" onclick="generate()">↓ Generate .docx</button>
+  </div>
 </div>
 
 <div id="status-bar"></div>
@@ -64,7 +157,7 @@ button{cursor:pointer;font-family:inherit;border:none}
   <div class="panel">
     <div class="panel-hdr" style="cursor:pointer" onclick="toggleSection('hdr-body','hdr-arrow')">
       <span class="panel-title">Document Header</span>
-      <span id="hdr-arrow" style="font-size:11px;color:#555">▲</span>
+      <span id="hdr-arrow" style="font-size:11px;color:var(--text-muted)">▲</span>
     </div>
     <div id="hdr-body" class="panel-body" style="display:block">
       <div style="margin-bottom:12px">
@@ -86,9 +179,9 @@ button{cursor:pointer;font-family:inherit;border:none}
       </div>
       <input type="hidden" id="h-adt" value=""/>
       <input type="hidden" id="h-rdt" value=""/>
-      <div onclick="toggleSection('docs-body','docs-arrow')" style="cursor:pointer;display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span style="font-size:11px;font-weight:700;color:#FFB800;letter-spacing:.08em;text-transform:uppercase">Required Documentation &amp; Tools</span>
-        <span id="docs-arrow" style="font-size:11px;color:#555">▲</span>
+      <div onclick="toggleSection('docs-body','docs-arrow')" style="cursor:pointer;display:flex;align-items:center;gap:8px;margin-bottom:6px;color:var(--text-header)">
+        <span style="font-size:11px;font-weight:700;color:var(--text-header);letter-spacing:.08em;text-transform:uppercase">Required Documentation &amp; Tools</span>
+        <span id="docs-arrow" style="font-size:11px;color:var(--text-muted)">▲</span>
       </div>
       <div id="docs-body" style="display:block">
         <div class="g2">
@@ -103,13 +196,13 @@ button{cursor:pointer;font-family:inherit;border:none}
     <div class="panel-hdr">
       <span class="panel-title">Job Steps — Hazard Analysis</span>
       <div style="display:flex;gap:8px;align-items:center">
-        <span id="step-count-lbl" style="font-size:11px;color:#555">2 steps</span>
+        <span id="step-count-lbl" style="font-size:11px;color:var(--text-label)">2 steps</span>
         <button class="btn btn-y btn-sm" onclick="addStep()">+ Add Step</button>
       </div>
     </div>
     <div style="padding:14px">
       <div id="locked-list"></div>
-      <div class="divider"><hr><span style="font-size:11px;color:#FFB800;font-weight:600;white-space:nowrap">Your Steps</span><hr></div>
+      <div class="divider"><hr><span style="font-size:11px;color:var(--text-header);font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap">Your Steps</span><hr></div>
       <div id="step-list"></div>
     </div>
   </div>
@@ -117,16 +210,16 @@ button{cursor:pointer;font-family:inherit;border:none}
   <div class="panel">
     <div class="panel-hdr" style="cursor:pointer" onclick="toggleSection('ref-body','ref-arrow')">
       <span class="panel-title">Reference Documents — Corporate Standards</span>
-      <span id="ref-arrow" style="font-size:11px;color:#555">▲</span>
+      <span id="ref-arrow" style="font-size:11px;color:var(--text-muted)">▲</span>
     </div>
     <div id="ref-body" class="panel-body" style="display:block">
-      <div style="font-size:12px;color:#888;margin-bottom:10px">Select all applicable HSE-CS corporate standards. These will be checked in the Reference Documents section of the JHA.</div>
-      <div id="ref-docs-grid" style="display:block;max-height:500px;overflow-y:auto;padding-right:4px"></div>
+      <div style="font-size:12px;color:var(--text-label);margin-bottom:10px">Select all applicable HSE-CS corporate standards. These will be checked in the Reference Documents section of the JHA.</div>
+      <div id="ref-docs-grid" style="display:block;max-height:520px;overflow-y:auto;padding-right:4px"></div>
     </div>
   </div>
 
   <div style="display:flex;justify-content:flex-end;gap:12px;padding-top:4px;align-items:center">
-    <span style="font-size:12px;color:#555"><span id="cta-count">2</span> steps</span>
+    <span style="font-size:12px;color:var(--text-label)"><span id="cta-count">2</span> steps</span>
     <button class="btn btn-y" style="padding:10px 24px;font-size:14px;box-shadow:0 4px 14px #FFB80033" onclick="generate()">↓ Generate .docx Document</button>
   </div>
 
@@ -161,7 +254,16 @@ var _id=500;
 function uid(){return String(_id++);}
 function mkControl(o){o=o||{};return{id:uid(),text:o.text||"",comment:o.comment||""};}
 function mkHazard(o){o=o||{};return{id:uid(),type:o.type||"SH",mech:o.mech||o.mechanism||"",comment:o.comment||"",preTRA:o.preTRA||9,postTRA:o.postTRA||4,controls:(o.controls||[]).map(function(c){return mkControl(c);})};}
-function mkStep(){return{id:uid(),desc:"",hazards:[mkHazard()],imageData:null,imageName:null,imageType:null,imageCx:0,imageCy:0};}
+function mkStep(num,lbl){
+  return{id:uid(),desc:"",stepNum:num||nextStepNum(),stepLabel:lbl||"",
+         hazards:[mkHazard()],imageData:null,imageName:null,imageType:null,imageCx:0,imageCy:0};
+}
+function nextStepNum(){
+  if(!steps.length) return LOCKED.length+1;
+  var last=steps[steps.length-1];
+  // If last step had a letter suffix it's a sub-step — keep same number? No — always increment
+  return (last.stepNum||LOCKED.length+1)+1;
+}
 var steps=[];
 
 // ── UTILITIES ─────────────────────────────────────────────────────────────────
@@ -188,6 +290,14 @@ function makeSelect(options,value,onChange){
 function makeCtrlSelect(value,onChange){
   var sel=document.createElement("select");
   var bl=document.createElement("option");bl.value="";bl.textContent="— select —";sel.appendChild(bl);
+  // If value is set but not in library, add as imported option at top
+  var inLibrary=false;
+  if(value){CTRL_LIB.forEach(function(g){g.items.forEach(function(i){if(i===value)inLibrary=true;});});}
+  if(value&&!inLibrary){
+    var imported=document.createElement("option");imported.value=value;
+    imported.textContent="⚠ Imported: "+value.slice(0,60)+(value.length>60?"…":"");
+    imported.selected=true;sel.appendChild(imported);
+  }
   CTRL_LIB.forEach(function(g){
     var og=document.createElement("optgroup");og.label=g.cat;
     g.items.forEach(function(item){var opt=document.createElement("option");opt.value=item;opt.textContent=item;if(item===value)opt.selected=true;og.appendChild(opt);});
@@ -232,15 +342,27 @@ function setStatus(type,msg){
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function renderAll(){
   var container=ge("step-list");container.innerHTML="";
-  steps.forEach(function(step,si){container.appendChild(buildStepCard(step,LOCKED.length+1+si));});
+  steps.forEach(function(step,si){container.appendChild(buildStepCard(step,si));});
   updateCounts();
 }
 
-function buildStepCard(step,num){
+function buildStepCard(step,si){
   var card=document.createElement("div");card.className="step-card";
   var hdr=document.createElement("div");hdr.className="step-hdr";
-  var nb=document.createElement("div");nb.className="step-num-badge";nb.textContent=num;
-  var title=document.createElement("span");title.style.cssText="font-size:11px;font-weight:700;color:#555;letter-spacing:.06em;text-transform:uppercase";title.textContent="Step "+num;
+  var nb=document.createElement("div");nb.className="step-num-badge";nb.style.cssText="width:auto;min-width:30px;height:30px;background:#FFB800;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;flex-shrink:0;padding:0 6px";
+  var numInp=document.createElement("input");numInp.type="text";
+  numInp.value=String(step.stepNum||1);
+  numInp.style.cssText="width:32px;background:transparent;border:none;color:#000;font-size:14px;font-weight:800;text-align:center;padding:0;outline:none;cursor:text";
+  numInp.title="Edit step number";
+  (function(s){numInp.oninput=function(){var v=parseInt(numInp.value);if(!isNaN(v)&&v>0){s.stepNum=v;_updateTitle();}};})(step);
+  nb.appendChild(numInp);
+  var title=document.createElement("span");title.style.cssText="font-size:11px;font-weight:700;color:var(--text-label);letter-spacing:.06em;text-transform:uppercase";
+  // Set title from current step data (updated live by numInp/subInp oninput below)
+  function _updateTitle(){
+    var n=step.stepNum||1;
+    title.textContent="Step "+String(n)+(step.stepLabel||"");
+  }
+  _updateTitle();
   var actions=document.createElement("div");actions.style.cssText="margin-left:auto;display:flex;gap:8px;align-items:center";
   if(steps.length>1){
     var delBtn=document.createElement("button");delBtn.className="btn btn-r btn-sm";delBtn.textContent="Remove";
@@ -250,6 +372,19 @@ function buildStepCard(step,num){
   hdr.appendChild(nb);hdr.appendChild(title);hdr.appendChild(actions);card.appendChild(hdr);
 
   var body=document.createElement("div");body.className="step-body";
+  // Sub-step letter row
+  var subRow=document.createElement("div");subRow.style.cssText="display:flex;align-items:flex-end;gap:10px;margin-bottom:10px";
+  var subDiv=document.createElement("div");subDiv.style.cssText="width:110px;flex-shrink:0";
+  var subLbl=document.createElement("label");subLbl.className="lbl";subLbl.textContent="Sub-step letter";subDiv.appendChild(subLbl);
+  var subInp=document.createElement("input");subInp.value=step.stepLabel||"";
+  subInp.placeholder="a / b / c";subInp.style.cssText="text-align:center;font-weight:700;letter-spacing:2px";
+  subInp.maxLength=2;
+  (function(s){subInp.oninput=function(){s.stepLabel=subInp.value.replace(/[^a-zA-Z]/g,"").toLowerCase();subInp.value=s.stepLabel;_updateTitle();};})(step);
+  subDiv.appendChild(subInp);subRow.appendChild(subDiv);
+  var subHint=document.createElement("span");subHint.style.cssText="font-size:11px;color:var(--text-muted);padding-bottom:8px";
+  subHint.textContent="Optional. Type a letter (a, b, c) to create a sub-step. Leave blank for a standalone step.";
+  subRow.appendChild(subHint);body.appendChild(subRow);
+
   var dw=document.createElement("div");dw.style.marginBottom="12px";
   var dl=document.createElement("label");dl.className="lbl";dl.textContent="Task Description *";dw.appendChild(dl);
   var ta=document.createElement("textarea");ta.style.minHeight="60px";ta.value=step.desc;
@@ -263,7 +398,7 @@ function buildStepCard(step,num){
   var imgLbl=document.createElement("label");imgLbl.className="lbl";imgLbl.textContent="Step Photo (optional — placed in Equipment column)";
   imgLabel.appendChild(imgLbl);
   var imgInput=document.createElement("input");imgInput.type="file";imgInput.accept="image/*";
-  imgInput.style.cssText="background:#161616;border:1px dashed #383838;border-radius:4px;padding:6px;color:#fff;font-size:12px;width:100%";
+  imgInput.style.cssText="background:var(--bg-input);border:1px dashed var(--border-input);border-radius:4px;padding:6px;color:var(--text-main);font-size:12px;width:100%";
   (function(s){
     imgInput.onchange=function(){
       var file=imgInput.files[0];
@@ -282,7 +417,7 @@ function buildStepCard(step,num){
   if(step.imageData){
     var preview=document.createElement("img");
     preview.src=step.imageData;
-    preview.style.cssText="max-height:80px;max-width:150px;border-radius:4px;border:1px solid #383838;object-fit:contain;background:#111";
+    preview.style.cssText="max-height:80px;max-width:150px;border-radius:4px;border:1px solid var(--border-input);object-fit:contain;background:var(--bg-haz)";
     var clearBtn=document.createElement("button");clearBtn.className="btn btn-r btn-sm";clearBtn.textContent="× Remove";
     (function(s){clearBtn.onclick=function(){s.imageData=null;s.imageName=null;s.imageType=null;renderAll();};
     })(step);
@@ -293,7 +428,7 @@ function buildStepCard(step,num){
   body.appendChild(imgDiv);
 
   var hazHdr=document.createElement("div");hazHdr.style.cssText="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px";
-  var hazTitle=document.createElement("span");hazTitle.style.cssText="font-size:11px;font-weight:700;color:#FFB800;letter-spacing:.06em;text-transform:uppercase";
+  var hazTitle=document.createElement("span");hazTitle.style.cssText="font-size:11px;font-weight:700;color:var(--text-header);letter-spacing:.06em;text-transform:uppercase";
   hazTitle.textContent="Hazards & Controls";
   var addHazBtn=document.createElement("button");addHazBtn.className="btn btn-ok btn-sm";addHazBtn.textContent="+ Add Hazard";
   addHazBtn.onclick=function(){step.hazards.push(mkHazard());renderAll();};
@@ -332,7 +467,7 @@ function buildHazBlock(haz,step){
     g.appendChild(sel);g.appendChild(badge);return g;
   }
   r2.appendChild(makeTRAGroup("Pre TRA",haz.preTRA,function(v){haz.preTRA=v;}));
-  var arr=document.createElement("span");arr.style.color="#444";arr.textContent="→";r2.appendChild(arr);
+  var arr=document.createElement("span");arr.style.color="var(--text-muted)";arr.textContent="→";r2.appendChild(arr);
   r2.appendChild(makeTRAGroup("Post TRA",haz.postTRA,function(v){haz.postTRA=v;}));
   if(step.hazards.length>1){
     var delH=document.createElement("button");delH.className="btn btn-r btn-sm";delH.textContent="Remove hazard";delH.style.marginLeft="auto";
@@ -343,7 +478,7 @@ function buildHazBlock(haz,step){
 
   var cs=document.createElement("div");cs.style.cssText="border-top:1px solid #222;padding-top:6px";
   var cHdr=document.createElement("div");cHdr.style.cssText="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px";
-  var cTitle=document.createElement("span");cTitle.style.cssText="font-size:10px;font-weight:700;color:#FFB800;letter-spacing:.07em;text-transform:uppercase";cTitle.textContent="Controls";
+  var cTitle=document.createElement("span");cTitle.style.cssText="font-size:10px;font-weight:700;color:var(--text-header);letter-spacing:.07em;text-transform:uppercase";cTitle.textContent="Controls";
   var addCBtn=document.createElement("button");addCBtn.className="btn btn-ok btn-sm";addCBtn.textContent="+ Add Control";
   addCBtn.onclick=function(){haz.controls.push(mkControl());renderAll();};
   cHdr.appendChild(cTitle);cHdr.appendChild(addCBtn);cs.appendChild(cHdr);
@@ -371,18 +506,105 @@ function addStep(){
 
 function renderLocked(){
   var container=ge("locked-list");
-  LOCKED.forEach(function(ls){
-    var card=document.createElement("div");card.className="locked-card";
-    var hdr=document.createElement("div");hdr.style.cssText="display:flex;align-items:center;gap:10px;padding:7px 14px;background:#0e0e0e;border-bottom:1px solid #1a1a1a";
-    var nb=document.createElement("div");nb.style.cssText="width:30px;height:30px;background:#333;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#888;flex-shrink:0";nb.textContent=ls.num;
-    var title=document.createElement("span");title.style.cssText="font-size:11px;color:#444;font-weight:700;letter-spacing:.06em;text-transform:uppercase";title.textContent="Step "+ls.num+" — Template Step";
-    var badge=document.createElement("span");badge.style.cssText="margin-left:auto;font-size:10px;color:#333;background:#1a1a1a;padding:2px 8px;border-radius:10px;border:1px solid #222";badge.textContent="🔒 Locked";
-    hdr.appendChild(nb);hdr.appendChild(title);hdr.appendChild(badge);card.appendChild(hdr);
-    var body=document.createElement("div");body.style.cssText="padding:8px 14px";
-    var desc=document.createElement("div");desc.style.cssText="font-size:12px;color:#777;margin-bottom:6px;line-height:1.5";desc.textContent=ls.desc.split(":")[0];
-    var tags=document.createElement("div");tags.style.cssText="display:flex;flex-wrap:wrap;gap:4px";
-    ls.hazards.forEach(function(h){var t=document.createElement("span");t.style.cssText="font-size:11px;background:#1a1a1a;color:#555;padding:2px 7px;border-radius:3px";t.textContent="["+h.type+"] "+h.mech.split(":")[0];tags.appendChild(t);});
-    body.appendChild(desc);body.appendChild(tags);card.appendChild(body);container.appendChild(card);
+  LOCKED.forEach(function(ls,lsi){
+    // Use the same .step-card styling as user steps
+    var card=document.createElement("div");card.className="step-card";
+
+    // Header — same as buildStepCard but grey badge + lock badge
+    var hdr=document.createElement("div");hdr.className="step-hdr";
+    var nb=document.createElement("div");nb.className="step-num-badge";
+    nb.style.cssText="width:30px;height:30px;background:#555;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0";
+    nb.textContent=ls.num;
+    var title=document.createElement("span");
+    title.style.cssText="font-size:11px;font-weight:700;color:var(--text-label);letter-spacing:.06em;text-transform:uppercase";
+    title.textContent="Step "+ls.num;
+    var lockBadge=document.createElement("span");
+    lockBadge.style.cssText="margin-left:auto;font-size:10px;color:var(--text-muted);background:var(--bg-haz);padding:2px 10px;border-radius:10px;border:1px solid var(--border)";
+    lockBadge.textContent="🔒 Locked — Pre-populated";
+    hdr.appendChild(nb);hdr.appendChild(title);hdr.appendChild(lockBadge);
+    card.appendChild(hdr);
+
+    // Body — same structure as user step body
+    var body=document.createElement("div");body.className="step-body";
+
+    // Description
+    var dw=document.createElement("div");dw.style.marginBottom="12px";
+    var dl=document.createElement("label");dl.className="lbl";dl.textContent="Task Description";dw.appendChild(dl);
+    var descDiv=document.createElement("div");
+    descDiv.style.cssText="background:var(--bg-haz);border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:13px;color:var(--text-main);line-height:1.5;opacity:.75";
+    descDiv.textContent=ls.desc;
+    dw.appendChild(descDiv);body.appendChild(dw);
+
+    // Hazards header
+    var hazHdr=document.createElement("div");hazHdr.style.cssText="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px";
+    var hazTitle=document.createElement("span");
+    hazTitle.style.cssText="font-size:11px;font-weight:700;color:var(--text-header);letter-spacing:.06em;text-transform:uppercase";
+    hazTitle.textContent="Hazards & Controls — "+ls.hazards.length+" hazard"+(ls.hazards.length!==1?"s":"");
+    hazHdr.appendChild(hazTitle);body.appendChild(hazHdr);
+
+    // Each hazard block
+    ls.hazards.forEach(function(haz){
+      var block=document.createElement("div");block.className="haz-block";block.style.opacity=".8";
+
+      // Row 1: type / mechanism / comment
+      var r1=document.createElement("div");
+      r1.style.cssText="display:grid;grid-template-columns:140px 1fr 1fr;gap:6px;margin-bottom:6px";
+
+      var tw=document.createElement("div");
+      var tl=document.createElement("label");tl.className="lbl";tl.textContent="Hazard Type";tw.appendChild(tl);
+      var typeVal=document.createElement("div");
+      typeVal.style.cssText="background:var(--bg-ctl);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:13px;color:var(--text-main)";
+      typeVal.textContent=haz.type||"SH";tw.appendChild(typeVal);
+
+      var mw=document.createElement("div");
+      var ml=document.createElement("label");ml.className="lbl";ml.textContent="Mechanism";mw.appendChild(ml);
+      var mechVal=document.createElement("div");
+      mechVal.style.cssText="background:var(--bg-ctl);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:12px;color:var(--text-main);line-height:1.4";
+      mechVal.textContent=haz.mech||"";mw.appendChild(mechVal);
+
+      var cw=document.createElement("div");
+      var cl=document.createElement("label");cl.className="lbl";cl.textContent="Comment";cw.appendChild(cl);
+      var commVal=document.createElement("div");
+      commVal.style.cssText="background:var(--bg-ctl);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:12px;color:var(--text-muted);line-height:1.4";
+      commVal.textContent=haz.comment||"—";cw.appendChild(commVal);
+
+      r1.appendChild(tw);r1.appendChild(mw);r1.appendChild(cw);block.appendChild(r1);
+
+      // Row 2: TRA
+      var r2=document.createElement("div");r2.style.cssText="display:flex;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap";
+      function makeTraDisp(label,val){
+        var g=document.createElement("div");g.style.cssText="display:flex;align-items:center;gap:8px";
+        var l2=document.createElement("label");l2.className="lbl";l2.style.marginBottom="0";l2.textContent=label;g.appendChild(l2);
+        var ts=traStyle(val);
+        var badge=document.createElement("span");
+        badge.style.cssText="background:"+ts.bg+";color:"+ts.fg+";border-radius:4px;padding:3px 12px;font-size:13px;font-weight:700";
+        badge.textContent=val;g.appendChild(badge);return g;
+      }
+      r2.appendChild(makeTraDisp("Pre TRA",haz.preTRA));
+      var arr=document.createElement("span");arr.style.color="var(--text-muted)";arr.textContent="→";r2.appendChild(arr);
+      r2.appendChild(makeTraDisp("Post TRA",haz.postTRA));
+      block.appendChild(r2);
+
+      // Controls
+      if(haz.controls&&haz.controls.length){
+        var cs=document.createElement("div");cs.style.cssText="border-top:1px solid var(--border);padding-top:6px";
+        var cTitle=document.createElement("div");
+        cTitle.style.cssText="font-size:10px;font-weight:700;color:var(--text-header);letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px";
+        cTitle.textContent="Controls";cs.appendChild(cTitle);
+        haz.controls.forEach(function(c){
+          var cr=document.createElement("div");
+          cr.style.cssText="padding:3px 8px;font-size:12px;color:var(--text-main);border-left:2px solid var(--border);margin-bottom:3px;line-height:1.4";
+          cr.textContent=(c.text||"")+(c.comment?" ("+c.comment+")":"");
+          cs.appendChild(cr);
+        });
+        block.appendChild(cs);
+      }
+
+      body.appendChild(block);
+    });
+
+    card.appendChild(body);
+    container.appendChild(card);
   });
 }
 
@@ -414,7 +636,7 @@ function ctrlCat(text){
   return"Administrative Control";
 }
 
-function makeAllStepRows(stepNum,desc,hazards){
+function makeAllStepRows(stepNum,desc,hazards,stepLabel){
   var out="";
   if(!hazards||!hazards.length)hazards=[{type:"SH",mech:"",comment:"",preTRA:9,postTRA:4,controls:[]}];
   var nHaz=hazards.length;
@@ -448,11 +670,14 @@ function makeAllStepRows(stepNum,desc,hazards){
       +"</w:tcBorders>";
 
     // Col 0: task number
+    // Use stepLabel override if set, otherwise auto-number
+    // Append letter suffix to step number: stepNum=4, stepLabel="a" -> "4a"  
+    var displayNum=(stepLabel&&stepLabel.length>0)?String(stepNum)+stepLabel:String(stepNum);
     var c0="<w:tc><w:tcPr><w:tcW w:w=\"628\" w:type=\"dxa\"/><w:vMerge"+vm+"/>"+mBdr
       +"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"FFFFFF\" w:themeFill=\"background1\"/>"
       +"<w:vAlign w:val=\"center\"/></w:tcPr>"
       +"<w:p><w:pPr><w:pStyle w:val=\"NoSpacing\"/></w:pPr>"
-      +(isFirst?"<w:r><w:t>"+escXml(String(stepNum))+"</w:t></w:r>":"")
+      +(isFirst?"<w:r><w:t>"+escXml(displayNum)+"</w:t></w:r>":"")
       +"</w:p></w:tc>";
 
     // Col 1: description
@@ -640,7 +865,11 @@ function fillXML(xmlStr,userData){
   ["64E4EE25","04EA4DC7","50EE146C","5FBEF0EF","7C150A63","7C29D5B7","3492ADF0"].forEach(function(pid,i){insAfterSdt(pid,userData.docs[i]);});
   ["3D90E58C","2BB678A0","58924EDF","3B2DF33E","4E3C5F97","6BF8BAA6","7A27A959"].forEach(function(pid,i){insAfterSdt(pid,userData.tools[i]);});
   var r7m=xmlStr.indexOf('paraId="015C3B56"'),row7s=r7m>=0?xmlStr.lastIndexOf('<w:tr ',r7m):-1;
-  if(row7s>=0){var tblEnd=xmlStr.indexOf('</w:tbl>',row7s);var stepsXml="";userData.steps.forEach(function(step,si){stepsXml+=makeAllStepRows(LOCKED.length+1+si,step.desc,step.hazards);});reps.push([row7s,tblEnd+8,stepsXml+"</w:tbl>"]);}
+  if(row7s>=0){var tblEnd=xmlStr.indexOf('</w:tbl>',row7s);var stepsXml="";
+    userData.steps.forEach(function(step){
+      var sNum=step.stepNum||(LOCKED.length+1);
+      stepsXml+=makeAllStepRows(sNum,step.desc,step.hazards,step.stepLabel||"");
+    });reps.push([row7s,tblEnd+8,stepsXml+"</w:tbl>"]);}
   // Replace reference document rows (rows 13-25) with user slot selections
   if(userData.refSlots){
     var row13m=xmlStr.indexOf("paraId=\"6342D933\"");
@@ -708,7 +937,7 @@ function generate(){
       });
       if(!stHazards.length) stHazards=[{type:"SH",mech:"",comment:"",preTRA:9,postTRA:4,controls:[],imageXml:imageXml}];
     }
-    return{desc:s.desc,hazards:stHazards};
+    return{desc:s.desc,stepNum:s.stepNum,stepLabel:s.stepLabel||'',hazards:stHazards};
   });
 
   var userData={
@@ -833,6 +1062,14 @@ var HSE_CS_STANDARDS=[
 // 39 reference slots — user picks a standard (or blank) for each
 // refSlots[i] = "" (blank) or "HSE-CS-XXX" (selected code)
 var refSlots=[];
+function toggleTheme(){
+  var isDark=document.body.classList.toggle("dark-mode");
+  var lbl=document.getElementById("theme-lbl");
+  if(lbl) lbl.textContent=isDark?"☀ Light":"☾ Dark";
+  try{localStorage.setItem("sfi_theme",isDark?"dark":"light");}catch(e){}
+}
+
+
 (function(){
   for(var i=0;i<39;i++) refSlots[i]="";
   // Default selections — first 16 slots filled in order
@@ -856,7 +1093,7 @@ var refSlots=[];
 
 function makeRefSelect(slotIdx){
   var sel=document.createElement("select");
-  sel.style.cssText="font-size:12px;padding:4px 6px;background:#161616;color:#fff;border:1px solid #383838;border-radius:4px;width:100%";
+  sel.style.cssText="font-size:12px;padding:4px 6px;background:var(--bg-input);color:var(--text-main);border:1px solid var(--border-input);border-radius:4px;width:100%";
   var bl=document.createElement("option"); bl.value=""; bl.textContent="-- none --"; sel.appendChild(bl);
   HSE_CS_STANDARDS.forEach(function(s){
     var opt=document.createElement("option");
@@ -878,7 +1115,7 @@ function renderRefDocs(){
       var row=document.createElement("div");
       row.style.cssText="display:flex;align-items:center;gap:8px;margin-bottom:5px";
       var num=document.createElement("span");
-      num.style.cssText="font-size:11px;color:#555;width:22px;flex-shrink:0;text-align:right";
+      num.style.cssText="font-size:11px;color:var(--text-muted);width:22px;flex-shrink:0;text-align:right";
       num.textContent=(slotIdx+1);
       var sel=makeRefSelect(slotIdx);
       row.appendChild(num); row.appendChild(sel);
@@ -888,8 +1125,406 @@ function renderRefDocs(){
 }
 
 
+// ── JHA LOADER — parse an existing .docx and populate the UI ─────────────────
+function loadExistingJHA(input) {
+  var file = input.files[0];
+  if (!file) return;
+  setStatus("loading", "Reading " + file.name + "…");
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    setStatus("loading","Reading "+file.name+" — this may take a moment for large documents…");
+    JSZip.loadAsync(e.target.result).then(function(zip) {
+      var parsedData, relsStr;
+      return zip.file("word/_rels/document.xml.rels").async("string").then(function(r){
+        relsStr = r;
+        return zip.file("word/document.xml").async("string");
+      }).then(function(xmlStr){
+        parsedData = parseJHAXml(xmlStr);
+        // Build rId -> {path, mimeType} map from rels
+        var ridMap = {};
+        var relMatches = relsStr.match(/Id="(rId\d+)"[^>]*Type="[^"]*image[^"]*"[^>]*Target="([^"]+)"/g)||[];
+        relMatches.forEach(function(m){
+          var id=m.match(/Id="(rId\d+)"/)[1];
+          var tgt=m.match(/Target="([^"]+)"/)[1];
+          var ext=(tgt.split(".").pop()||"").toLowerCase();
+          // Only PNG and JPEG — skip EMF/WMF (browser cannot display)
+          if(ext==="png"||ext==="jpeg"||ext==="jpg"){
+            ridMap[id]={path:"word/"+tgt, mime:"image/"+(ext==="jpg"?"jpeg":ext)};
+          }
+        });
+        // Read image files for each step that has an imageRid
+        var imagePromises = parsedData.steps.map(function(step){
+          if(!step.imageRid||!ridMap[step.imageRid]) return Promise.resolve(null);
+          var info = ridMap[step.imageRid];
+          var f2 = zip.file(info.path);
+          if(!f2) return Promise.resolve(null);
+          return f2.async("base64").then(function(b64){
+            return {dataUrl:"data:"+info.mime+";base64,"+b64, mime:info.mime};
+          }).catch(function(){return null;});
+        });
+        return Promise.all(imagePromises);
+      }).then(function(images){
+        // Attach image data to parsed steps — no dimension loading (avoids freeze)
+        images.forEach(function(img,i){
+          if(!img) return;
+          parsedData.steps[i].imageData = img.dataUrl;
+          parsedData.steps[i].imageType = img.mime;
+          parsedData.steps[i].imageName = "imported_image_"+(i+1)+"."+img.mime.split("/")[1];
+          parsedData.steps[i].imageCx = 0; // will scale to column width at generate time
+          parsedData.steps[i].imageCy = 0;
+        });
+        applyParsedJHA(parsedData);
+        var imgCount = images.filter(function(x){return x;}).length;
+        setStatus("done","Loaded "+file.name+" — "+parsedData.steps.length+" step(s)"+(imgCount?" and "+imgCount+" photo(s)":"")+". Review and edit before generating.");
+        setTimeout(function(){setStatus("idle");},12000);
+      });
+    }).catch(function(err){
+      setStatus("error","Could not open file: "+err.message);
+      setTimeout(function(){setStatus("idle");},8000);
+    });
+    // Reset input so same file can be reloaded
+    input.value = "";
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseJHAXml(xmlStr) {
+  var parser = new DOMParser();
+  var doc2 = parser.parseFromString(xmlStr, "application/xml");
+  var W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+
+  function cellText(cell) {
+    return Array.from(cell.getElementsByTagNameNS(W,"t"))
+      .map(function(t){return t.textContent||"";}).join("")
+      .replace(/ /g," ").trim();
+  }
+  function cleanArtifacts(txt) {
+    // Strip revision tracking artifacts like "35B", "129B" at start of text
+        // Strip ALL leading revision artifacts like "35B", "170B170B" etc.
+    var _changed=true;
+    while(_changed){
+      _changed=false;
+      var _i=0;
+      while(_i<txt.length&&txt[_i]>="0"&&txt[_i]<="9") _i++;
+      if(_i>0&&_i<txt.length&&txt[_i]>="A"&&txt[_i]<="Z"){
+        while(_i<txt.length&&txt[_i]>="A"&&txt[_i]<="Z") _i++;
+        txt=txt.slice(_i).trim();
+        _changed=true;
+      }
+    }
+    return txt;
+  }
+  function cellParas(cell) {
+    return Array.from(cell.getElementsByTagNameNS(W,"p")).map(function(p){
+      var style = p.getElementsByTagNameNS(W,"pStyle")[0];
+      var sv = style ? style.getAttributeNS(W,"val") : "Normal";
+      var txt = Array.from(p.getElementsByTagNameNS(W,"t"))
+        .map(function(t){return t.textContent||"";}).join("")
+        .replace(/ /g," ").trim();
+      txt = cleanArtifacts(txt);
+      return {style:sv, text:txt};
+    });
+  }
+
+  var tbls = doc2.getElementsByTagNameNS(W,"tbl");
+  if (tbls.length < 2) throw new Error("Could not find JHA tables");
+
+  // ── Auto-detect header table and steps table ─────────────────────────────
+  // Steps table = first table that has 8-cell rows with vMerge restart
+  var headerTbl = tbls[0], stepsTbl = null;
+  for (var ti = 0; ti < tbls.length; ti++) {
+    var trows = Array.from(tbls[ti].getElementsByTagNameNS(W,"tr"));
+    for (var ri = 0; ri < trows.length; ri++) {
+      var rc = Array.from(trows[ri].getElementsByTagNameNS(W,"tc"));
+      if (rc.length === 8) {
+        var vm0 = rc[0].getElementsByTagNameNS(W,"vMerge")[0];
+        if (vm0 && vm0.getAttributeNS(W,"val") === "restart") {
+          stepsTbl = tbls[ti]; break;
+        }
+      }
+    }
+    if (stepsTbl) break;
+  }
+  if (!stepsTbl) throw new Error("Could not find steps table");
+
+  // ── Parse header — handles two formats ──────────────────────────────────
+  // Format A (our template): separate label cell + value cell
+  // Format B (other JHAs):   "Label: Value" combined in one cell
+  var hdrRows = Array.from(headerTbl.getElementsByTagNameNS(W,"tr"));
+  var r0cells = Array.from(hdrRows[0].getElementsByTagNameNS(W,"tc"));
+  var r0c0txt = cellText(r0cells[0]);
+  // Format A: row 0 has "Scope of Work:" label in cell 0, value in cell 1, and cell 1 has no colon
+  var r0c1txt = r0cells.length > 1 ? cellText(r0cells[1]) : "";
+  var isFormatA = (r0c0txt.indexOf("Scope of Work") >= 0 && r0cells.length > 1 && r0c1txt.indexOf(":") < 0);
+
+  var header = {scope:"",company:"",dept:"",location:"",
+                completedBy:"",approvedBy:"",reviewedBy:"",
+                completedDate:"",approvedDate:"",reviewDate:""};
+
+  if (isFormatA) {
+    // Our generated template format
+    function hdrA(ri,ci) {
+      var cells = Array.from(hdrRows[ri].getElementsByTagNameNS(W,"tc"));
+      return ci < cells.length ? cellText(cells[ci]) : "";
+    }
+    header.scope        = hdrA(0,1);
+    header.company      = hdrA(1,1); header.dept     = hdrA(1,3); header.location   = hdrA(1,5);
+    header.completedBy  = hdrA(2,1); header.approvedBy= hdrA(2,3); header.reviewedBy = hdrA(2,5);
+    header.completedDate= hdrA(3,1); header.approvedDate=hdrA(3,3); header.reviewDate = hdrA(3,5);
+  } else {
+    // Other JHA format — "Label: Value" in same cell, split on first ": "
+    function hdrB(ri,ci) {
+      var cells = Array.from(hdrRows[ri].getElementsByTagNameNS(W,"tc"));
+      if (ci >= cells.length) return "";
+      var txt = cellText(cells[ci]);
+      var sep = txt.indexOf(": ");
+      return sep > 0 ? txt.slice(sep+2).trim() : txt;
+    }
+    var sep0 = r0c0txt.indexOf(": ");
+    header.scope        = sep0 > 0 ? r0c0txt.slice(sep0+2).trim() : r0c0txt;
+    header.company      = hdrB(1,0); header.dept     = hdrB(1,1); header.location   = hdrB(1,2);
+    header.completedBy  = hdrB(2,0); header.approvedBy= hdrB(2,1); header.reviewedBy = hdrB(2,2);
+    header.completedDate= hdrB(3,0); header.approvedDate=hdrB(3,1); header.reviewDate = hdrB(3,2);
+  }
+
+  // ── Parse docs and tools ─────────────────────────────────────────────────
+  var docs = [], tools = [];
+  for (var dri = 4; dri < hdrRows.length; dri++) {
+    var dcells = Array.from(hdrRows[dri].getElementsByTagNameNS(W,"tc"));
+    if (dcells.length < 2) continue;
+    var d = cellText(dcells[0]), t2 = cellText(dcells[1]);
+    // Skip header rows and PPE rows
+    if (d.indexOf("Required Documentation")>=0||d.indexOf("Required Tools")>=0) continue;
+    if (t2.indexOf("Required Documentation")>=0||t2.indexOf("Required Tools")>=0) continue;
+    if (d.indexOf("☒")>=0||d.indexOf("☐")>=0||d.indexOf("☑")>=0) continue;
+    if (d.indexOf("Glove")>=0||d.indexOf("Cartridge")>=0||d.indexOf("PPE")>=0) continue;
+    if (d && docs.length < 7) docs.push(d);
+    if (t2 && tools.length < 7) tools.push(t2);
+  }
+
+  // ── Parse steps ──────────────────────────────────────────────────────────
+  var stepsRows = Array.from(stepsTbl.getElementsByTagNameNS(W,"tr"));
+  var steps = [], currentStep = null;
+
+  stepsRows.forEach(function(row) {
+    var cells = Array.from(row.getElementsByTagNameNS(W,"tc"));
+    if (cells.length < 8) return;
+
+    var vm = cells[0].getElementsByTagNameNS(W,"vMerge")[0];
+    var vmVal = vm ? (vm.getAttributeNS(W,"val") || "continue") : "no_vm";
+    var isFirst = (vmVal === "restart");
+
+    if (isFirst) {
+      // Description: join col 1 paragraphs
+      // First non-empty paragraph(s) may be a title/heading; join with ": " separator
+      var col1Paras = cellParas(cells[1]).filter(function(p){return p.text.length > 0;});
+      var desc = "";
+      if(col1Paras.length === 0){
+        desc = "";
+      } else if(col1Paras.length === 1){
+        desc = col1Paras[0].text;
+      } else {
+        // First paragraph = title/name, rest = description body
+        var titlePart = col1Paras[0].text;
+        var bodyParts = col1Paras.slice(1).map(function(p){return p.text;}).join(" ");
+        desc = bodyParts ? titlePart + ": " + bodyParts : titlePart;
+      }
+      desc = desc.replace(/\s+/g," ").trim();
+      // Extract image rId from col 2 drawing (if present)
+      var imageRid = null;
+      var drawings = cells[2].getElementsByTagNameNS(
+        "http://schemas.openxmlformats.org/drawingml/2006/main","blip");
+      if (drawings.length > 0) {
+        imageRid = drawings[0].getAttributeNS(
+          "http://schemas.openxmlformats.org/officeDocument/2006/relationships","embed");
+      }
+      // Read step number/label from col 0 (may be "3", "4a", "4b" etc.)
+          var stepLblRaw = cellText(cells[0]).replace(/ /g," ").trim();
+      // Parse "1" -> {num:1, lbl:""}, "2a" -> {num:2, lbl:"a"}, "2b" -> {num:2, lbl:"b"}
+      var _digits="", _letters="";
+      for(var _ci=0;_ci<stepLblRaw.length;_ci++){
+        var _ch=stepLblRaw[_ci];
+        if(_ch>="0"&&_ch<="9"&&_letters.length===0) _digits+=_ch;
+        else if((_ch>="a"&&_ch<="z")||(_ch>="A"&&_ch<="Z")) _letters+=_ch.toLowerCase();
+      }
+      var stepNum2 = _digits.length>0 ? parseInt(_digits) : (LOCKED.length+1);
+      var stepLbl = _letters;
+      currentStep = {desc:desc, hazards:[], imageRid:imageRid, stepNum:stepNum2, stepLabel:stepLbl};
+      steps.push(currentStep);
+    }
+    if (!currentStep) return;
+
+    // Hazard type col 3
+    var typeText = cellText(cells[3]).replace(/\s+/g," ").split(" ")[0].split(" ")[0].trim();
+
+    // TRA values
+    var preTRA  = parseInt(cellText(cells[5])) || 9;
+    var postTRA = parseInt(cellText(cells[7])) || 4;
+
+    // Mechanism col 4: any non-Heading1 para = category, Heading1 = detail
+    var mechParas = cellParas(cells[4]);
+    var mechCat = "", mechDetail = "";
+    mechParas.forEach(function(p) {
+      if (!p.text) return;
+      if (p.style !== "Heading1") { if (!mechCat) mechCat = p.text.replace(/:$/,"").trim(); }
+      else                        { if (!mechDetail) mechDetail = p.text; }
+    });
+    // Extract trailing comment from parens in detail
+    var mechComment = "";
+    var cm = mechDetail.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+    if (cm) { mechDetail = cm[1].trim(); mechComment = cm[2]; }
+    var mechFull = mechCat && mechDetail ? mechCat+": "+mechDetail : (mechCat||mechDetail);
+
+    // Controls col 6: Heading2 = category (skip), everything else = control item
+    var controls = [];
+    cellParas(cells[6]).forEach(function(p) {
+      if (!p.text || p.style === "Heading2") return;
+      controls.push({text:p.text, comment:""});
+    });
+
+    currentStep.hazards.push({
+      type:typeText||"SH", mech:mechFull, comment:mechComment,
+      preTRA:preTRA, postTRA:postTRA, controls:controls
+    });
+  });
+
+  return {header:header, steps:steps, docs:docs, tools:tools};
+}
+
+function applyParsedJHA(parsed) {
+  // ── Populate header fields ────────────────────────────────────────────────
+  var h = parsed.header;
+  function setField(id, val) { var el=ge(id); if(el&&val) el.value=val; }
+  setField("h-scope",   h.scope);
+  setField("h-company", h.company);
+  setField("h-dept",    h.dept);
+  setField("h-loc",     h.location);
+  setField("h-cby",     h.completedBy);
+  setField("h-aby",     h.approvedBy);
+  setField("h-rby",     h.reviewedBy);
+  setField("h-cdt",     h.completedDate);
+  setField("h-adt",     h.approvedDate);
+  setField("h-rdt",     h.reviewDate);
+
+  // ── Populate docs and tools
+  if(parsed.docs){parsed.docs.slice(0,7).forEach(function(d,i){var el=ge("doc-"+i);if(el&&d)el.value=d;});}
+  if(parsed.tools){parsed.tools.slice(0,7).forEach(function(t2,i){var el=ge("tool-"+i);if(el&&t2)el.value=t2;});}
+
+  // ── Populate steps ────────────────────────────────────────────────────────
+  if (parsed.steps.length > 0) {
+    steps = parsed.steps.map(function(s) {
+      return {
+        id:        uid(),
+        desc:      s.desc || "",
+        stepNum:   (s.stepNum||1)+LOCKED.length,
+        stepLabel: s.stepLabel || "",
+        imageData: null, imageName: null, imageType: null, imageCx: 0, imageCy: 0,
+        hazards:   (s.hazards || []).map(function(h) {
+          return {
+            id:       uid(),
+            type:     h.type || "SH",
+            mech:     matchMech(h.mech),
+            comment:  h.comment || "",
+            preTRA:   h.preTRA || 9,
+            postTRA:  h.postTRA || 4,
+            controls: (h.controls || []).map(function(c) {
+              var mo=matchCtrlObj((c.text||"")+(c.comment?" ("+c.comment+")":""));
+              return { id: uid(), text: mo.text, comment: mo.comment };
+            })
+          };
+        })
+      };
+    });
+    renderAll();
+  }
+
+  // Scroll to steps
+  var el = ge("step-list");
+  if (el) el.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+// ── Improved matching — handles prefix-based fuzzy matching ─────────────────
+function normStr(s){
+  return (s||"").toLowerCase()
+    .replace(/[/\\]/g," ").replace(/[-–—]/g," ")
+    .replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
+}
+function extractPrefix(text){
+  text=(text||"").replace(/\s*\([^)]*\)\s*$/,"").trim();
+  var ci=text.indexOf(":");
+  return ci>0?text.slice(0,ci).trim():text;
+}
+
+function matchMech(text){
+  if(!text) return "";
+  var allMechs=[];
+  Object.keys(HAZARD_LIB).forEach(function(k){HAZARD_LIB[k].forEach(function(m){allMechs.push(m);});});
+  // Exact
+  for(var i=0;i<allMechs.length;i++) if(allMechs[i]===text) return text;
+  var tn=normStr(text), tpfx=normStr(extractPrefix(text));
+  var best="",bestScore=0;
+  allMechs.forEach(function(m){
+    var mn=normStr(m),mpfx=normStr(extractPrefix(m));
+    var score=0;
+    var minP=Math.min(tpfx.length,mpfx.length);
+    for(var k=3;k<=minP;k++) if(tpfx.slice(0,k)===mpfx.slice(0,k)) score+=2;
+    var minF=Math.min(tn.length,mn.length);
+    for(var k=6;k<=minF;k++) if(tn.slice(0,k)===mn.slice(0,k)) score++;
+    if(score>bestScore){bestScore=score;best=m;}
+  });
+  return bestScore>12?best:text;
+}
+
+// Returns {text, comment} — text is library match (or "" if no match), comment has detail
+function matchCtrlObj(rawText){
+  if(!rawText) return{text:"",comment:""};
+  // Strip trailing comment in parens
+  var comment="";
+  var m=rawText.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+  var textNoComment=rawText;
+  if(m){textNoComment=m[1].trim();comment=m[2];}
+
+  var allCtrls=[];
+  CTRL_LIB.forEach(function(g){g.items.forEach(function(i){allCtrls.push(i);});});
+  // Exact on stripped text
+  for(var i=0;i<allCtrls.length;i++) if(allCtrls[i]===textNoComment||allCtrls[i]===rawText) return{text:allCtrls[i],comment:comment};
+
+  var tn=normStr(textNoComment), tpfx=normStr(extractPrefix(textNoComment));
+  var best="",bestScore=0;
+  allCtrls.forEach(function(c){
+    var cn=normStr(c),cpfx=normStr(extractPrefix(c));
+    var score=0;
+    var minP=Math.min(tpfx.length,cpfx.length);
+    for(var k=3;k<=minP;k++) if(tpfx.slice(0,k)===cpfx.slice(0,k)) score+=2;
+    var minF=Math.min(tn.length,cn.length);
+    for(var k=6;k<=minF;k++) if(tn.slice(0,k)===cn.slice(0,k)) score++;
+    if(score>bestScore){bestScore=score;best=c;}
+  });
+  if(bestScore>12) return{text:best,comment:comment};
+  // No match — store raw text in comment, leave text empty
+  return{text:"",comment:rawText};
+}
+
+// Back-compat wrapper
+function matchCtrl(text){ return matchCtrlObj(text).text||text; }
+
+
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
+function toggleTheme(){
+  var isDark=document.body.classList.toggle("dark-mode");
+  var lbl=document.getElementById("theme-lbl");
+  if(lbl) lbl.textContent=isDark?"☀ Light":"☾ Dark";
+  try{localStorage.setItem("sfi_theme",isDark?"dark":"light");}catch(e){}
+}
+
+
 (function(){
+  try{
+    var savedTheme=localStorage.getItem("sfi_theme");
+    if(savedTheme==="dark"){document.body.classList.add("dark-mode");var l=document.getElementById("theme-lbl");if(l)l.textContent="☀ Light";}
+  }catch(e){}
   var today=new Date().toISOString().split("T")[0];
   ge("h-cdt").value=today;
 
